@@ -111,3 +111,6 @@ const PORT = Number(process.env.PORT || 3000);
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ Up at http://localhost:${PORT}`);
 });
+
+// Export for Vercel
+export default app;
