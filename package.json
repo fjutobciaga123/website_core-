@@ -2,7 +2,6 @@
   "name": "core-pfp-generator",
   "version": "1.0.0",
   "description": "CORE PFP Generator with OpenAI Vision API",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
