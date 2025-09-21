@@ -211,6 +211,15 @@
             min-width: 0;
         }
         
+        /* Mobile: ensure equal spacing */
+        @media (max-width: 768px) {
+            .nav-links {
+                justify-content: space-around;
+                width: 100%;
+                gap: 0;
+            }
+        }
+        
         .nav-link {
             color: var(--core-text-blue);
             text-decoration: none;
@@ -274,26 +283,9 @@
                 font-weight: 300;
                 flex: 1;
                 text-align: center;
-            }
-            
-            /* Środkowy klawisz (BUY) ma być dokładnie w środku ekranu */
-            .nav-link[href="#howto"] {
-                position: relative;
-                left: 50%;
-                transform: translateX(-50%);
-                flex: 0 0 auto;
-                width: calc(100vw / 3);
-            }
-            
-            /* Dostosuj pozostałe klawisze */
-            .nav-link[href="#roadmap"] {
-                flex: 1;
-                text-align: center;
-            }
-            
-            .nav-link[href="#pfp-generator"] {
-                flex: 1; 
-                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             
             .nav-actions .nav-social {
