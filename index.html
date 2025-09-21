@@ -114,6 +114,17 @@
                        0 0 35px var(--core-blue);
         }
         
+        /* Hide custom cursor on mobile */
+        @media (max-width: 768px) {
+            .custom-cursor {
+                display: none !important;
+            }
+            
+            body {
+                cursor: auto !important;
+            }
+        }
+        
         /* Sci-Fi Navigation Bar */
         .sci-fi-nav {
             position: fixed;
@@ -4319,16 +4330,23 @@
         const cursor = document.querySelector('.custom-cursor');
         const logo = document.querySelector('.core-logo');
         
-        // Initialize cursor position
-        cursor.style.left = '50%';
-        cursor.style.top = '50%';
-        cursor.style.opacity = '0';
+        // Check if mobile device
+        const isMobile = window.innerWidth <= 768;
+        
+        if (!isMobile && cursor) {
+            // Initialize cursor position
+            cursor.style.left = '50%';
+            cursor.style.top = '50%';
+            cursor.style.opacity = '0';
+        }
         
         document.addEventListener('mousemove', (e) => {
-            // Update cursor position immediately and make visible
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            cursor.style.opacity = '1';
+            // Update cursor position immediately and make visible (only on desktop)
+            if (!isMobile && cursor) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                cursor.style.opacity = '1';
+            }
             
             // Update stars position with throttling
             const now = Date.now();
@@ -4350,13 +4368,17 @@
         
         // Hide cursor when mouse leaves window
         document.addEventListener('mouseleave', () => {
-            cursor.style.opacity = '0';
+            if (!isMobile && cursor) {
+                cursor.style.opacity = '0';
+            }
         });
         
-        // Show cursor and hide default cursor when mouse enters
+        // Show cursor and hide default cursor when mouse enters (only on desktop)
         document.addEventListener('mouseenter', () => {
-            document.body.style.cursor = 'none';
-            cursor.style.opacity = '1';
+            if (!isMobile) {
+                document.body.style.cursor = 'none';
+                if (cursor) cursor.style.opacity = '1';
+            }
         });
 
         // Animated Stars System
