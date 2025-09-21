@@ -18,7 +18,13 @@ app.use((req, res, next) => {
   next();
 });
 
-const upload = multer({ dest: "uploads/" });
+// Use memory storage for Vercel serverless
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -51,12 +57,11 @@ Integrate subtle glowing infinity symbols floating around to reinforce the theme
 The lighting should feel dramatic, with vivid highlights and deep shadows.
 The overall look is otherworldly, cosmic, and powerful — like the subject is infused with radiant blue energy.`;
 
-    // Read file as buffer to preserve MIME type information
-    console.log("Using original file:", req.file.path, "mimetype:", req.file.mimetype);
-    const imageBuffer = fs.readFileSync(req.file.path);
+    // Use buffer directly (multer memory storage)
+    console.log("Using file buffer, mimetype:", req.file.mimetype);
     
     // Create a file-like object with proper type information
-    const imageFile = new File([imageBuffer], req.file.originalname, {
+    const imageFile = new File([req.file.buffer], req.file.originalname, {
       type: req.file.mimetype
     });
     
@@ -94,8 +99,7 @@ The overall look is otherworldly, cosmic, and powerful — like the subject is i
     console.error("/api/generate-avatar error:", msg);
     res.status(status || 500).json({ error: "Image edit failed", details: msg });
   } finally {
-    // cleanup temp files
-    if (req.file?.path) fs.unlink(req.file.path, () => {});
+    // No cleanup needed with memory storage
   }
 });
 
