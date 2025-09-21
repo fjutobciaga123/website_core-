@@ -1,11 +1,11 @@
-import express from "express";
-import multer from "multer";
-import cors from "cors";
-import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
-import sharp from "sharp";
-import dotenv from "dotenv";
+const express = require("express");
+const multer = require("multer");
+const cors = require("cors");
+const OpenAI = require("openai");
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
@@ -108,9 +108,13 @@ app.get('/', (req, res) => {
 });
 
 const PORT = Number(process.env.PORT || 3000);
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Up at http://localhost:${PORT}`);
-});
+
+// Only start server if not in Vercel environment
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`✅ Up at http://localhost:${PORT}`);
+  });
+}
 
 // Export for Vercel
-export default app;
+module.exports = app;
