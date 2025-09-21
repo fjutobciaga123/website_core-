@@ -219,6 +219,7 @@
             box-sizing: border-box;
             text-shadow: 0 0 10px var(--core-glow-blue); /* Jak w przyciskach */
             border-radius: 0;
+            white-space: nowrap; /* Zapobiega zawijaniu tekstu w navbar */
         }
         
         .nav-link:hover {
@@ -248,6 +249,18 @@
                 padding: 3px 7px; /* Zwiększony padding proporcjonalnie o 15% */
                 letter-spacing: 0.15em;
             }
+            
+            /* Mobile navbar - TYLKO PFP Generator */
+            .nav-link:not([href="#pfp-generator"]) {
+                display: none;
+            }
+            
+            .nav-link[href="#pfp-generator"] {
+                font-size: 10px; /* Większy na mobile bo jest sam */
+                padding: 5px 12px;
+                font-weight: 300;
+            }
+            
             .nav-actions .nav-social {
                 display: none; /* Hide social shortcuts on small screens to keep nav compact */
             }
@@ -3552,6 +3565,7 @@
                         <a href="#whale" class="nav-link">Whale</a>
                         <a href="#art" class="nav-link">Gallery</a>
                         <a href="#roadmap" class="nav-link">Roadmap</a>
+                        <a href="#pfp-generator" class="nav-link">PFP GENERATOR</a>
                     </div>
                 </div>
             </div>
