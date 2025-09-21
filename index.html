@@ -250,15 +250,18 @@
                 letter-spacing: 0.15em;
             }
             
-            /* Mobile navbar - TYLKO PFP Generator */
-            .nav-link:not([href="#pfp-generator"]) {
+            /* Mobile navbar - ROADMAP, PFP GENERATOR, BUY */
+            .nav-link:not([href="#roadmap"]):not([href="#pfp-generator"]):not([href="#howto"]) {
                 display: none;
             }
             
-            .nav-link[href="#pfp-generator"] {
-                font-size: 10px; /* Większy na mobile bo jest sam */
-                padding: 5px 12px;
+            .nav-link[href="#roadmap"],
+            .nav-link[href="#pfp-generator"], 
+            .nav-link[href="#howto"] {
+                font-size: 9px; /* Trochę mniejszy żeby zmieścić 3 linki */
+                padding: 4px 8px;
                 font-weight: 300;
+                flex: 1;
             }
             
             .nav-actions .nav-social {
@@ -3558,14 +3561,14 @@
             <div class="nav-content">
                 <div class="nav-section">
                     <div class="nav-links">
+                        <a href="#roadmap" class="nav-link">Roadmap</a>
                         <a href="#about" class="nav-link">About</a>
                         <a href="#stats" class="nav-link">Stats</a>
                         <a href="#movement" class="nav-link">Movement</a>
-                        <a href="#howto" class="nav-link">Buy</a>
+                        <a href="#pfp-generator" class="nav-link">PFP GENERATOR</a>
                         <a href="#whale" class="nav-link">Whale</a>
                         <a href="#art" class="nav-link">Gallery</a>
-                        <a href="#roadmap" class="nav-link">Roadmap</a>
-                        <a href="#pfp-generator" class="nav-link">PFP GENERATOR</a>
+                        <a href="#howto" class="nav-link">Buy</a>
                     </div>
                 </div>
             </div>
