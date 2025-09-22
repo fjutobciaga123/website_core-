@@ -2184,7 +2184,8 @@
         
         .pfp-generator-container {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             margin-bottom: 3rem;
         }
         
@@ -2388,7 +2389,8 @@
         /* Responsive PFP Generator */
         @media (max-width: 768px) {
             .pfp-generator-container {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: center;
                 gap: 2rem;
             }
             
@@ -4192,11 +4194,11 @@
                     <button class="upload-button" id="uploadBtn">UPLOAD AN IMAGE</button>
                     <input type="file" id="imageInput" accept="image/*" style="display: none;">
                 </div>
+                
+                <button class="generate-btn" id="generateBtn" disabled>
+                    Generate CORE Aura
+                </button>
             </div>
-            
-            <button class="generate-btn" id="generateBtn" disabled>
-                Generate CORE Aura
-            </button>
         </div>
     </section>
     
