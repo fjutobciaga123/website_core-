@@ -5782,9 +5782,15 @@
                     this.handleFileSelect(e.target.files[0]);
                 });
                 
-                // Reset state
+                // Reset state and ensure proper styling
                 this.uploadedFile = null;
                 this.generateBtn.style.display = 'block';
+                this.generateBtn.style.position = '';
+                this.generateBtn.style.transform = '';
+                this.generateBtn.style.left = '';
+                this.generateBtn.style.right = '';
+                this.generateBtn.style.top = '';
+                this.generateBtn.style.bottom = '';
                 this.generateBtn.disabled = true;
                 this.generateBtn.textContent = 'Generate CORE Aura';
             }
