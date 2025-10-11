@@ -146,9 +146,24 @@
             height: 100%;
             position: relative;
             overflow-x: hidden;
+            max-width: 100vw;
             background: #000000;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             /* Performance: Use system fonts for faster loading */
+        }
+        
+        /* Mobile: prevent horizontal scroll completely */
+        @media (max-width: 768px) {
+            html, body {
+                touch-action: pan-y;
+                overscroll-behavior-x: none;
+                width: 100%;
+                max-width: 100vw;
+            }
+            
+            * {
+                max-width: 100vw;
+            }
         }
         
         /* Enhanced scroll animations - faster and more fluid */
@@ -3764,10 +3779,85 @@
             left: 100%;
         }
         
+        /* Mobile Footer Hamburger Menu */
+        .footer-hamburger {
+            display: none; /* Hidden on desktop */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 25, 40, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--core-text-blue);
+            border-radius: 8px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 10003;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .footer-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--core-text-blue);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .footer-hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        
+        .footer-hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .footer-hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+        
+        .footer-hamburger:hover {
+            background: rgba(0, 25, 40, 1);
+            border-color: var(--core-cyan);
+            box-shadow: 0 0 20px rgba(0, 153, 255, 0.5);
+        }
+        
         /* Responsive Footer */
         @media (max-width: 768px) {
+            .footer-hamburger {
+                display: flex; /* Show on mobile */
+            }
+            
+            .footer-content {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(0, 10, 20, 0.98);
+                backdrop-filter: blur(20px);
+                z-index: 10002;
+                transform: translateY(-100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                overflow-y: auto;
+                padding: 80px 20px 40px;
+            }
+            
+            .footer-content.active {
+                transform: translateY(0);
+            }
+            
             .footer-section {
-                padding: 40px 15px 15px 15px;
+                padding: 0;
+                margin-top: 0;
+                background: transparent;
+                backdrop-filter: none;
             }
             
             .footer-main {
@@ -4096,18 +4186,30 @@
         /* Responsive */
         @media (max-width: 768px) {
             .core-logo {
-                max-width: 320px; /* Zwiększone z 280px */
-                width: 70vw; /* Zwiększone z 60vw */
-                max-height: 160px; /* Zwiększone z 140px */
-                transform: translateZ(0); /* Standard property */
-                -webkit-transform: translateZ(0); /* Safari optimization */
+                max-width: 380px; /* Zwiększone z 320px - większe logo */
+                width: 75vw; /* Zwiększone z 70vw */
+                max-height: 190px; /* Zwiększone z 160px */
+                margin-top: -60px; /* Wyżej - było bez margin-top */
+                transform: translateZ(0) !important; /* Standard property - no scale on mobile */
+                -webkit-transform: translateZ(0) !important; /* Safari optimization */
                 backface-visibility: hidden;
                 -webkit-backface-visibility: hidden;
+                pointer-events: none; /* Wyłącz hover na mobile */
+            }
+            
+            /* Disable logo hover effect on mobile */
+            .core-logo:hover {
+                filter: drop-shadow(0 0 20px var(--core-glow-blue)) 
+                       drop-shadow(0 0 30px var(--core-glow-cyan))
+                       drop-shadow(0 0 40px var(--core-blue));
+                transform: translateZ(0) !important; /* No scale effect */
+                -webkit-transform: translateZ(0) !important;
             }
             
             .header-actions { 
-                bottom: 20px; /* Zmniejszone z 40px - niżej na mobile */
+                bottom: 10px; /* Wyżej - było 20px */
                 gap: 14px; /* Zmniejszone z 16px */
+                margin-top: -50px; /* Wyżej przyciski też */
             }
             
             .header-buy-now { 
@@ -4283,8 +4385,9 @@
         
         @media (max-width: 768px) {
             .lightbox-content img {
-                max-width: 95vw;
-                max-height: 85vh;
+                max-width: 75vw; /* Zmniejszone z 95vw - mniejsze obrazy */
+                max-height: 70vh; /* Zmniejszone z 85vh */
+                margin-left: -5vw; /* Lekko w lewo */
             }
             
             .lightbox-close {
@@ -5445,8 +5548,15 @@
     </section>
     
     <!-- Footer -->
-    <footer class="footer-section">
-        <div class="footer-content">
+    <footer class="footer-section" id="mainFooter">
+        <!-- Mobile Hamburger Menu -->
+        <button class="footer-hamburger" id="footerHamburger" aria-label="Toggle footer menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <div class="footer-content" id="footerContent">
             <div class="footer-main">
                 <div class="footer-logo">
                     <img src="corelogo.svg" alt="CORE" class="footer-logo-img">
@@ -7537,6 +7647,36 @@
                 console.log('✅ Back to top button initialized');
             } else {
                 console.error('❌ Back to top button not found!');
+            }
+            
+            // Mobile Footer Hamburger Menu
+            const hamburger = document.getElementById('footerHamburger');
+            const footerContent = document.getElementById('footerContent');
+            
+            if (hamburger && footerContent) {
+                hamburger.addEventListener('click', function() {
+                    hamburger.classList.toggle('active');
+                    footerContent.classList.toggle('active');
+                    
+                    // Prevent body scroll when menu is open
+                    if (footerContent.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+                
+                // Close menu when clicking on footer links
+                const footerLinks = footerContent.querySelectorAll('.footer-link, .back-to-top-button');
+                footerLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        footerContent.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    });
+                });
+                
+                console.log('✅ Footer hamburger menu initialized');
             }
         });
         
