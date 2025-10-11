@@ -427,6 +427,121 @@
                 font-size: 8px;
                 padding: 3px 8px;
             }
+            
+            /* Hamburger menu button - visible only on mobile */
+            .nav-hamburger {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                width: 30px;
+                height: 24px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                padding: 0;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10003;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-hamburger span {
+                width: 100%;
+                height: 3px;
+                background: var(--core-cyan);
+                border-radius: 2px;
+                transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                position: relative;
+                transform-origin: center;
+                box-shadow: 0 0 8px var(--core-cyan);
+            }
+            
+            /* Hamburger animation to X */
+            .nav-hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(8px, 8px);
+            }
+            
+            .nav-hamburger.active span:nth-child(2) {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            
+            .nav-hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(8px, -8px);
+            }
+            
+            /* Mobile navigation overlay */
+            .sci-fi-nav.mobile-menu-active {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.98);
+                z-index: 10002;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 80px 20px 40px;
+            }
+            
+            .sci-fi-nav.mobile-menu-active .nav-panel {
+                width: 100%;
+                height: auto;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+            }
+            
+            .sci-fi-nav.mobile-menu-active .nav-content {
+                flex-direction: column;
+                gap: 30px;
+                padding: 40px 20px;
+                background: transparent;
+                position: static;
+                height: auto;
+            }
+            
+            .sci-fi-nav.mobile-menu-active .nav-links {
+                flex-direction: column;
+                gap: 25px;
+                width: 100%;
+            }
+            
+            .sci-fi-nav.mobile-menu-active .nav-link {
+                font-size: 24px !important;
+                padding: 15px 30px !important;
+                display: flex !important;
+                text-align: center;
+                width: 100%;
+                justify-content: center;
+                background: rgba(0, 153, 255, 0.1);
+                border: 1px solid rgba(0, 153, 255, 0.3);
+                border-radius: 8px;
+            }
+            
+            .sci-fi-nav.mobile-menu-active .nav-actions {
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+            }
+            
+            .sci-fi-nav.mobile-menu-active .nav-social,
+            .sci-fi-nav.mobile-menu-active .nav-cta {
+                display: flex !important;
+                font-size: 18px !important;
+                padding: 12px 24px !important;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Hide hamburger on desktop */
+        @media (min-width: 769px) {
+            .nav-hamburger {
+                display: none;
+            }
         }
 
         /* Right side: social + buy buttons */
@@ -4722,7 +4837,14 @@
     <div id="main-content" class="main-content" style="display: none;">
     
     <!-- Sci-Fi Navigation Bar -->
-    <nav class="sci-fi-nav">
+    <nav class="sci-fi-nav" id="mainNav">
+        <!-- Mobile Hamburger Menu Button -->
+        <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
         <div class="nav-panel">
             <div class="nav-content">
                 <div class="nav-section">
@@ -5548,15 +5670,8 @@
     </section>
     
     <!-- Footer -->
-    <footer class="footer-section" id="mainFooter">
-        <!-- Mobile Hamburger Menu -->
-        <button class="footer-hamburger" id="footerHamburger" aria-label="Toggle footer menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        
-        <div class="footer-content" id="footerContent">
+    <footer class="footer-section">
+        <div class="footer-content">
             <div class="footer-main">
                 <div class="footer-logo">
                     <img src="corelogo.svg" alt="CORE" class="footer-logo-img">
@@ -7648,35 +7763,65 @@
             } else {
                 console.error('❌ Back to top button not found!');
             }
+        });
+        
+        // Mobile navbar hamburger menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('navHamburger');
+            const nav = document.querySelector('.sci-fi-nav');
+            const navLinks = document.querySelectorAll('.nav-link, .nav-social, .nav-cta');
             
-            // Mobile Footer Hamburger Menu
-            const hamburger = document.getElementById('footerHamburger');
-            const footerContent = document.getElementById('footerContent');
-            
-            if (hamburger && footerContent) {
-                hamburger.addEventListener('click', function() {
-                    hamburger.classList.toggle('active');
-                    footerContent.classList.toggle('active');
+            if (hamburger && nav) {
+                // Toggle menu on hamburger click
+                hamburger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isActive = nav.classList.contains('mobile-menu-active');
                     
-                    // Prevent body scroll when menu is open
-                    if (footerContent.classList.contains('active')) {
-                        document.body.style.overflow = 'hidden';
+                    if (isActive) {
+                        // Close menu
+                        nav.classList.remove('mobile-menu-active');
+                        hamburger.classList.remove('active');
+                        document.body.style.overflow = '';
                     } else {
-                        document.body.style.overflow = 'auto';
+                        // Open menu
+                        nav.classList.add('mobile-menu-active');
+                        hamburger.classList.add('active');
+                        document.body.style.overflow = 'hidden';
                     }
                 });
                 
-                // Close menu when clicking on footer links
-                const footerLinks = footerContent.querySelectorAll('.footer-link, .back-to-top-button');
-                footerLinks.forEach(link => {
+                // Close menu when clicking navigation links
+                navLinks.forEach(link => {
                     link.addEventListener('click', function() {
-                        hamburger.classList.remove('active');
-                        footerContent.classList.remove('active');
-                        document.body.style.overflow = 'auto';
+                        if (nav.classList.contains('mobile-menu-active')) {
+                            nav.classList.remove('mobile-menu-active');
+                            hamburger.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
                     });
                 });
                 
-                console.log('✅ Footer hamburger menu initialized');
+                // Close menu when clicking outside (on overlay)
+                nav.addEventListener('click', function(e) {
+                    if (e.target === nav && nav.classList.contains('mobile-menu-active')) {
+                        nav.classList.remove('mobile-menu-active');
+                        hamburger.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                // Close menu on window resize if menu is open
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 768 && nav.classList.contains('mobile-menu-active')) {
+                        nav.classList.remove('mobile-menu-active');
+                        hamburger.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                console.log('✅ Mobile hamburger menu initialized');
+            } else {
+                console.error('❌ Hamburger button or navbar not found!');
             }
         });
         
