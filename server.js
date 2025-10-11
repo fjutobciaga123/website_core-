@@ -10,115 +10,255 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
-app.use(cors());
 
-// Add request logging middleware
+// Performance optimizations
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://corecoreonsol.vercel.app', 'https://your-domain.com'] 
+    : true,
+  credentials: true
+}));
+
+// Compress responses
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Security headers
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
 
-// Use memory storage for Vercel serverless
+// Request logging with performance metrics
+app.use((req, res, next) => {
+  const start = Date.now();
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  
+  const originalSend = res.send;
+  res.send = function(data) {
+    const duration = Date.now() - start;
+    console.log(`Response time: ${duration}ms`);
+    return originalSend.call(this, data);
+  };
+  
+  next();
+});
+
+// Optimized multer configuration
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
+    fileSize: 5 * 1024 * 1024, // Reduced to 5MB for better performance
+    files: 1
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.'));
+    }
   }
 });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// Health check
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, uptime: process.uptime() });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY,
+  timeout: 30000, // 30 second timeout
 });
 
-// Debug endpoint to check available routes
-app.get("/api/debug", (_req, res) => {
+// Health check with system info
+app.get("/api/health", (_req, res) => {
   res.json({ 
-    message: "CORE PFP Generator API", 
-    endpoints: ["/api/health", "/api/generate-avatar", "/api/debug"],
+    ok: true, 
+    uptime: Math.floor(process.uptime()),
+    memory: process.memoryUsage(),
     timestamp: new Date().toISOString()
   });
 });
 
-// Avatar generation (image -> edited image) using gpt-image-1
+// Debug endpoint
+app.get("/api/debug", (_req, res) => {
+  res.json({ 
+    message: "CORE PFP Generator API - Optimized", 
+    endpoints: ["/api/health", "/api/generate-avatar", "/api/debug"],
+    timestamp: new Date().toISOString(),
+    nodeEnv: process.env.NODE_ENV,
+    version: "2.0.0"
+  });
+});
+
+// Optimized avatar generation
 app.post("/api/generate-avatar", upload.single("image"), async (req, res) => {
-  console.log("=== GENERATE AVATAR REQUEST ===");
-  console.log("File:", req.file);
-  console.log("Body:", req.body);
+  const requestStart = Date.now();
+  console.log("=== OPTIMIZED GENERATE AVATAR REQUEST ===");
+  console.log("File size:", req.file?.size, "bytes");
+  console.log("File type:", req.file?.mimetype);
+  
   try {
-    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
+    if (!req.file) {
+      return res.status(400).json({ 
+        error: "No image uploaded",
+        code: "MISSING_FILE"
+      });
+    }
 
-    const stylePrompt = `Transform this image into a highly detailed digital illustration in a futuristic neon style.
-Retain the composition, shapes and recognizability of the original subject, but stylize it with an intense electric-blue aura.
-Outline the subject with glowing neon blue light, add soft blue energy mist and cosmic particles drifting in the background.
-Integrate subtle glowing infinity symbols floating around to reinforce the theme.
-The lighting should feel dramatic, with vivid highlights and deep shadows.
-The overall look is otherworldly, cosmic, and powerful — like the subject is infused with radiant blue energy.`;
+    // Optimize image before sending to OpenAI
+    let optimizedBuffer;
+    try {
+      optimizedBuffer = await sharp(req.file.buffer)
+        .resize(1024, 1024, { 
+          fit: 'cover',
+          position: 'center'
+        })
+        .jpeg({ 
+          quality: 85,
+          progressive: true
+        })
+        .toBuffer();
+      
+      console.log(`Image optimized: ${req.file.size} -> ${optimizedBuffer.length} bytes`);
+    } catch (sharpError) {
+      console.error("Image optimization failed:", sharpError);
+      optimizedBuffer = req.file.buffer; // Fallback to original
+    }
 
-    // Use buffer directly (multer memory storage)
-    console.log("Using file buffer, mimetype:", req.file.mimetype);
-    
-    // Create a file-like object with proper type information
-    const imageFile = new File([req.file.buffer], req.file.originalname, {
-      type: req.file.mimetype
+    const enhancedStylePrompt = `Transform this image with a futuristic cyberpunk aesthetic featuring:
+- Intense electric-blue aura and neon outline around the subject
+- Subtle cosmic blue energy particles and mist in the background
+- Glowing infinity symbols (∞) floating subtly around the edges
+- Dramatic lighting with vivid blue highlights and deep shadows
+- High contrast digital art style with sharp details
+- Ethereal, otherworldly atmosphere
+- Keep the original subject recognizable but make it look powered by cosmic blue energy
+- Style should feel like a premium digital art piece with professional quality`;
+
+    // Create optimized file object
+    const imageFile = new File([optimizedBuffer], req.file.originalname || 'image.jpg', {
+      type: 'image/jpeg'
     });
     
-    // Use images.edit (not edits) with model: gpt-image-1
+    console.log("Sending request to OpenAI...");
+    const openAIStart = Date.now();
+    
+    // Use optimized OpenAI call
     const response = await openai.images.edit({
       model: "gpt-image-1", 
       image: imageFile,
-      prompt: stylePrompt,
-      size: "1024x1024"
+      prompt: enhancedStylePrompt,
+      size: "1024x1024",
+      response_format: "b64_json" // Request base64 directly to avoid additional fetch
     });
 
+    const openAIDuration = Date.now() - openAIStart;
+    console.log(`OpenAI response time: ${openAIDuration}ms`);
+
     const dataItem = response?.data?.[0];
-    if (!dataItem?.url && !dataItem?.b64_json) {
-      console.error("OpenAI images.edit returned unexpected payload", response);
-      return res.status(502).json({ error: "OpenAI did not return an image" });
+    if (!dataItem?.b64_json && !dataItem?.url) {
+      console.error("OpenAI returned unexpected payload", response);
+      return res.status(502).json({ 
+        error: "OpenAI did not return an image",
+        code: "NO_IMAGE_RETURNED"
+      });
     }
 
-    // If we get a URL, we need to fetch and convert to base64
+    // Handle response efficiently
     let imageData;
-    if (dataItem.url) {
-      console.log("Got image URL, fetching:", dataItem.url);
-      const imageResponse = await fetch(dataItem.url);
+    if (dataItem.b64_json) {
+      imageData = dataItem.b64_json;
+    } else if (dataItem.url) {
+      console.log("Fetching image from URL:", dataItem.url);
+      const imageResponse = await fetch(dataItem.url, { 
+        timeout: 15000 // 15s timeout for image fetch
+      });
+      
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+      }
+      
       const imageBuffer = await imageResponse.arrayBuffer();
       imageData = Buffer.from(imageBuffer).toString('base64');
-    } else {
-      imageData = dataItem.b64_json;
     }
 
-    res.json({ image: imageData, model: "gpt-image-1" });
+    const totalDuration = Date.now() - requestStart;
+    console.log(`Total request time: ${totalDuration}ms`);
+
+    res.json({ 
+      image: imageData, 
+      model: "gpt-image-1",
+      processingTime: totalDuration,
+      success: true
+    });
+    
   } catch (err) {
-    // Try to surface OpenAI error details if available
-    const status = err?.status || err?.response?.status;
-    const data = err?.response?.data;
-    const msg = data || err?.message || String(err);
-    console.error("/api/generate-avatar error:", msg);
-    res.status(status || 500).json({ error: "Image edit failed", details: msg });
-  } finally {
-    // No cleanup needed with memory storage
+    const totalDuration = Date.now() - requestStart;
+    console.error(`/api/generate-avatar error after ${totalDuration}ms:`, err.message);
+    
+    // Enhanced error handling
+    let status = 500;
+    let errorCode = "UNKNOWN_ERROR";
+    
+    if (err.status) status = err.status;
+    if (err.code === 'ENOTFOUND') {
+      status = 503;
+      errorCode = "NETWORK_ERROR";
+    } else if (err.message?.includes('timeout')) {
+      status = 408;
+      errorCode = "TIMEOUT";
+    } else if (err.message?.includes('rate limit')) {
+      status = 429;
+      errorCode = "RATE_LIMITED";
+    }
+    
+    res.status(status).json({ 
+      error: "Image transformation failed", 
+      details: err.message,
+      code: errorCode,
+      processingTime: totalDuration
+    });
   }
 });
 
-// Static files AFTER API routes
-app.use(express.static('.'));
+// Error handling middleware
+app.use((error, req, res, next) => {
+  console.error('Unhandled error:', error);
+  res.status(500).json({
+    error: 'Internal server error',
+    code: 'INTERNAL_ERROR'
+  });
+});
 
-// Serve the main HTML file
+// Static files with caching
+app.use(express.static('.', {
+  maxAge: '1h', // Cache static files for 1 hour
+  etag: true
+}));
+
+// Serve main HTML with no-cache for updates
 app.get('/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
   res.sendFile(path.join(process.cwd(), 'index.html'));
 });
 
 const PORT = Number(process.env.PORT || 3000);
 
-// Only start server if not in Vercel environment
+// Enhanced server startup
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`✅ Up at http://localhost:${PORT}`);
+  const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`✅ CORE Server optimized and running at http://localhost:${PORT}`);
+    console.log(`📈 Node environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🚀 Ready for requests`);
+  });
+  
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      console.log('Server closed');
+      process.exit(0);
+    });
   });
 }
 
-// Export for Vercel
 module.exports = app;

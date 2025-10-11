@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "**",
+      "src": "**/*.{html,css,js,json,svg,jpg,jpeg,png,gif,webp,mp4,ico}",
       "use": "@vercel/static"
     },
     {
@@ -16,8 +16,57 @@
       "dest": "/api/index.js"
     },
     {
+      "src": "/(.*\\.(css|js|jpg|jpeg|png|gif|webp|svg|ico|mp4))",
+      "dest": "/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ]
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["iad1"]
 }
