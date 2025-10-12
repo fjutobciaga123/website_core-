@@ -164,6 +164,16 @@
             * {
                 max-width: 100vw;
             }
+            
+            /* WYŁĄCZ interaktywność tła gwiazd na mobile */
+            .stars-container {
+                pointer-events: none !important;
+                touch-action: none !important;
+            }
+            
+            .star {
+                pointer-events: none !important;
+            }
         }
         
         /* Enhanced scroll animations - faster and more fluid */
@@ -1242,11 +1252,13 @@
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1.2rem; /* Zmniejszone z 1.5rem */
             }
             
             .stat-box {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.2rem; /* Zmniejszone z 2rem 1.5rem */
+                min-height: 200px; /* Zmniejszone z 240px */
+                transform: scale(0.9); /* Dodatkowe zmniejszenie */
             }
         }
         
@@ -1793,7 +1805,12 @@
         @media (max-width: 768px) {
             .steps-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1.2rem; /* Zmniejszone z 1.5rem */
+            }
+            
+            .step-item {
+                padding: 1.3rem 1.2rem; /* Zmniejszone padding */
+                transform: scale(0.92); /* Dodatkowe zmniejszenie */
             }
         }
         
@@ -2494,6 +2511,13 @@
             
             .carousel-row {
                 gap: 20px; /* Mniejszy gap na mobile */
+                /* PRZYŚPIESZONA animacja na mobile - JESZCZE SZYBCIEJ */
+                animation-duration: 25s !important; /* Było 60s → 40s → teraz 25s (2.4x szybciej niż desktop) */
+            }
+            
+            .carousel-row.reverse {
+                /* Również szybciej dla reverse - JESZCZE SZYBCIEJ */
+                animation-duration: 35s !important; /* Było 80s → 55s → teraz 35s (2.3x szybciej niż desktop) */
             }
             
             .art-grid {
@@ -2794,12 +2818,13 @@
             
             .core-types-grid {
                 grid-template-columns: 1fr;
-                gap: 18px;
+                gap: 15px; /* Zmniejszone z 18px */
             }
             
             .core-type-item {
-                padding: 15px 18px;
-                min-height: 65px; /* Zwiększone z 55px na mobile też */
+                padding: 12px 15px; /* Zmniejszone z 15px 18px */
+                min-height: 58px; /* Zmniejszone z 65px */
+                transform: scale(0.92); /* Dodatkowe zmniejszenie */
             }
             
             .core-type-name {
@@ -3343,9 +3368,7 @@
             margin-top: 1rem;
         }
         
-        .phase-line.last {
-            display: none;
-        }
+        /* Usunięto .phase-line.last { display: none; } - pasek widoczny przy wszystkich fazach */
         
         .phase-content {
             flex: 1;
@@ -3744,7 +3767,7 @@
         
         /* Responsive Footer */
         @media (max-width: 768px) {
-            /* Footer pozostaje widoczny na mobile - normalny */
+            /* Footer widoczny na mobile */
             .footer-section {
                 padding: 40px 20px 20px 20px;
                 margin-top: 30px;
@@ -3769,6 +3792,13 @@
                 align-items: center;
             }
             
+            /* WYŚRODKUJ przycisk Copy na mobile */
+            .copy-button-footer {
+                margin: 0 auto;
+                display: block;
+                text-align: center;
+            }
+            
             .footer-bottom-content {
                 flex-direction: column;
                 gap: 1.5rem;
@@ -3779,184 +3809,14 @@
                 justify-content: center;
             }
             
-            /* Hamburger button - fixed w prawym GÓRNYM rogu */
+            /* UKRYJ hamburger na mobile */
             .mobile-footer-hamburger {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 5px;
-                position: fixed;
-                top: 20px; /* ZMIENIONE Z bottom NA top */
-                right: 20px;
-                width: 56px;
-                height: 56px;
-                background: rgba(0, 25, 40, 0.85);
-                backdrop-filter: blur(15px);
-                border: 1px solid var(--core-text-blue);
-                border-radius: 12px;
-                cursor: pointer;
-                z-index: 10001;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
-                           0 0 30px rgba(0, 153, 255, 0.2);
+                display: none !important;
             }
             
-            .mobile-footer-hamburger span {
-                display: block;
-                width: 26px;
-                height: 2.5px;
-                background: var(--core-cyan);
-                border-radius: 2px;
-                transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-                box-shadow: 0 0 8px var(--core-cyan);
-            }
-            
-            /* Animacja hamburgera do X */
-            .mobile-footer-hamburger.active span:nth-child(1) {
-                transform: rotate(45deg) translate(7px, 7px);
-            }
-            
-            .mobile-footer-hamburger.active span:nth-child(2) {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            
-            .mobile-footer-hamburger.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -7px);
-            }
-            
-            .mobile-footer-hamburger:active {
-                transform: scale(0.95);
-            }
-            
-            /* Fullscreen overlay menu */
+            /* UKRYJ overlay menu na mobile */
             .mobile-footer-menu {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0, 10, 20, 0.98);
-                backdrop-filter: blur(25px);
-                z-index: 10000;
-                display: none;
-                opacity: 0;
-                transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                overflow-y: auto;
-                padding: 100px 30px 120px;
-            }
-            
-            .mobile-footer-menu.active {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                opacity: 1;
-            }
-            
-            .mobile-nav-content {
-                width: 100%;
-                max-width: 400px;
-                display: flex;
-                flex-direction: column;
-                gap: 40px;
-                align-items: center;
-            }
-            
-            .mobile-nav-links {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-                width: 100%;
-            }
-            
-            .mobile-nav-link {
-                font-size: clamp(1.3rem, 4vw, 1.6rem);
-                font-weight: 300;
-                letter-spacing: 0.15em;
-                text-transform: uppercase;
-                color: var(--core-text-blue);
-                text-decoration: none;
-                text-align: center;
-                padding: 15px 25px;
-                background: rgba(0, 25, 40, 0.3);
-                backdrop-filter: blur(15px);
-                border: 1px solid rgba(0, 153, 255, 0.3);
-                border-radius: 8px;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            }
-            
-            .mobile-nav-link:active {
-                background: rgba(0, 25, 40, 0.5);
-                border-color: var(--core-cyan);
-                color: var(--core-cyan);
-                transform: scale(0.98);
-            }
-            
-            /* PFP GENERATOR w cyan */
-            .mobile-nav-link[href="#pfp-generator"] {
-                color: var(--core-cyan);
-                border-color: rgba(0, 255, 255, 0.5);
-                box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-            }
-            
-            .mobile-nav-cta {
-                display: inline-block;
-                width: 100%;
-                text-align: center;
-                text-decoration: none;
-                color: #fff;
-                background: linear-gradient(90deg, rgba(0,153,255,0.35) 0%, rgba(0,255,255,0.35) 100%);
-                border: 1px solid rgba(0,153,255,0.7);
-                padding: 16px 32px;
-                border-radius: 8px;
-                font-size: clamp(1.1rem, 3.5vw, 1.3rem);
-                letter-spacing: 0.2em;
-                text-transform: uppercase;
-                font-weight: 400;
-                box-shadow: 0 0 20px var(--core-glow-blue), 0 0 30px var(--core-glow-cyan);
-                transition: all 0.3s ease;
-            }
-            
-            .mobile-nav-cta:active {
-                background: linear-gradient(90deg, rgba(0,153,255,0.5) 0%, rgba(0,255,255,0.5) 100%);
-                transform: scale(0.98);
-            }
-            
-            .mobile-nav-social {
-                display: flex;
-                gap: 20px;
-                justify-content: center;
-            }
-            
-            .mobile-social-link {
-                width: 56px;
-                height: 56px;
-                background: rgba(0, 25, 40, 0.4);
-                backdrop-filter: blur(15px);
-                border: 1px solid rgba(0, 153, 255, 0.3);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--core-text-blue);
-                text-decoration: none;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            }
-            
-            .mobile-social-link svg {
-                width: 24px;
-                height: 24px;
-                fill: currentColor;
-            }
-            
-            .mobile-social-link:active {
-                background: rgba(0, 25, 40, 0.6);
-                border-color: var(--core-cyan);
-                color: var(--core-cyan);
-                transform: scale(0.95);
+                display: none !important;
             }
         }
         
@@ -4575,6 +4435,27 @@
             z-index: 9999;
             overflow: hidden;
             cursor: none; /* Hide default cursor in splash screen */
+            /* ZABLOKUJ scrollowanie gdy splash screen jest aktywny */
+            touch-action: none;
+            overscroll-behavior: none;
+        }
+        
+        /* Zablokuj scrollowanie body gdy splash screen jest aktywny */
+        body.splash-active {
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* Wyłącz interaktywność gwiazd w splash screen */
+        .splash-screen .stars-container {
+            pointer-events: none !important;
+            touch-action: none !important;
+        }
+        
+        .splash-screen .star {
+            pointer-events: none !important;
         }
         
         .splash-cursor {
@@ -4840,7 +4721,7 @@
         }
     </style>
 </head>
-<body>
+<body class="splash-active">
     <!-- Splash Screen -->
     <div id="splash-screen" class="splash-screen">
         <div class="splash-content">
@@ -5752,53 +5633,6 @@
         </div>
     </footer>
     
-    <!-- Mobile Navbar Hamburger Menu -->
-    <button class="mobile-footer-hamburger" id="mobileFooterHamburger" aria-label="Toggle navigation menu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-    
-    <div class="mobile-footer-menu" id="mobileFooterMenu">
-        <div class="mobile-nav-content">
-            <!-- Navigation Links -->
-            <div class="mobile-nav-links">
-                <a href="#about" class="mobile-nav-link">About</a>
-                <a href="#stats" class="mobile-nav-link">Stats</a>
-                <a href="#movement" class="mobile-nav-link">Movement</a>
-                <a href="#howto" class="mobile-nav-link">Buy</a>
-                <a href="#whale" class="mobile-nav-link">Whale</a>
-                <a href="#art" class="mobile-nav-link">Gallery</a>
-                <a href="#pfp-generator" class="mobile-nav-link">PFP GENERATOR</a>
-                <a href="#roadmap" class="mobile-nav-link">Roadmap</a>
-            </div>
-            
-            <!-- Buy Now Button -->
-            <a class="mobile-nav-cta" href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&buy=4FdojUmXeaFMBG6yUaoufAC5Bz7u9AwnSAMizkx5pump" target="_blank" rel="noopener">
-                <span class="btn-text">BUY NOW</span>
-            </a>
-            
-            <!-- Social Media Links -->
-            <div class="mobile-nav-social">
-                <a href="https://x.com/corecoreonsol" target="_blank" rel="noopener" class="mobile-social-link" aria-label="Twitter" title="Twitter">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill="currentColor" d="M18.244 2H21.5l-7.5 8.57L22.75 22h-6.03l-4.72-6.03L6.52 22H3.26l8.03-9.17L1.5 2h6.18l4.27 5.61L18.244 2zm-1.06 18h1.65L7.9 4h-1.7l10.974 16z"/>
-                    </svg>
-                </a>
-                <a href="https://t.me/CoreCommunityPortal" target="_blank" rel="noopener" class="mobile-social-link" aria-label="Telegram" title="Telegram">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill="currentColor" d="M9.036 15.803 8.9 19.4c.32 0 .46-.137.63-.3l3.02-2.89 6.26 4.59c.5.276 1.048.192 1.422-.208.355-.38.486-.94.577-1.34L22.99 3.545c.15-.672-.08-1.16-.312-1.41-.292-.315-.74-.45-1.197-.275L1.881 9.161c-.692.271-.88.72-.83 1.089.057.434.395.941 1.083 1.159l4.743 1.476 10.97-6.914c.18-.113.344.106.195.228l-9.006 7.604z"/>
-                    </svg>
-                </a>
-                <a href="https://www.tiktok.com/@corehcore" target="_blank" rel="noopener" class="mobile-social-link" aria-label="TikTok" title="TikTok">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill="currentColor" d="M12.001 2v12.77a3.23 3.23 0 1 1-3.23-3.23c.2 0 .4.02.59.06V8.54c-.2-.02-.39-.03-.59-.03a6.46 6.46 0 1 0 6.46 6.46v-7.7c1.2.86 2.67 1.37 4.26 1.37V6.09c-1.93 0-3.62-1.01-4.59-2.54A6.4 6.4 0 0 1 12.001 2z"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </div>
-    
     <script>
         console.log('SCRIPT TAG LOADED - IMMEDIATE TEST');
         
@@ -6101,6 +5935,14 @@
             }
             
             bindMouseEvents() {
+                // WYŁĄCZ interaktywność na mobile - sprawdź czy to urządzenie mobilne
+                const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+                
+                if (isMobile) {
+                    console.log('📱 Mobile detected - stars interactivity DISABLED');
+                    return; // Nie binduj eventów na mobile
+                }
+                
                 // Track mouse movement with throttling for performance
                 let mouseTimeout;
                 document.addEventListener('mousemove', (e) => {
@@ -6337,17 +6179,26 @@
             }
             
             bindMouseEvents() {
-                // Track mouse movement - identical to main page
+                // ⛔ WYŁĄCZONE - Splash screen nie reaguje na ruch myszki
+                // Gwiazdy są statyczne z animacją twinkle
+                console.log('🚫 Splash screen stars - mouse interaction DISABLED');
+                
+                // Ustaw mysz daleko poza ekranem - brak reakcji
+                this.mouseX = -10000;
+                this.mouseY = -10000;
+                
+                // NIE binduj event listenerów - brak interaktywności
+                /*
                 document.addEventListener('mousemove', (e) => {
                     this.mouseX = e.clientX;
                     this.mouseY = e.clientY;
                 });
                 
-                // Reset when mouse leaves window
                 document.addEventListener('mouseleave', () => {
                     this.mouseX = -1000;
                     this.mouseY = -1000;
                 });
+                */
             }
             
             startAnimation() {
@@ -6784,7 +6635,7 @@
                     if (!isDragging) return;
                     
                     const x = e.touches[0].pageX;
-                    const walk = (startX - x) * 1; // Scroll speed multiplier
+                    const walk = (startX - x) * 2.2; // MOCNO PRZYŚPIESZONE - było 1 → 1.5 → teraz 2.2x szybciej
                     this.scrollContainer.scrollLeft = startScrollLeft + walk;
                 });
                 
@@ -7828,66 +7679,6 @@
             }
         });
         
-        // Mobile footer hamburger menu functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const footerHamburger = document.getElementById('mobileFooterHamburger');
-            const footerMenu = document.getElementById('mobileFooterMenu');
-            const navLinks = footerMenu ? footerMenu.querySelectorAll('.mobile-nav-link, .mobile-social-link') : [];
-            
-            if (footerHamburger && footerMenu) {
-                // Toggle menu on hamburger click
-                footerHamburger.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isActive = footerMenu.classList.contains('active');
-                    
-                    if (isActive) {
-                        // Close menu
-                        footerMenu.classList.remove('active');
-                        footerHamburger.classList.remove('active');
-                        document.body.style.overflow = '';
-                    } else {
-                        // Open menu
-                        footerMenu.classList.add('active');
-                        footerHamburger.classList.add('active');
-                        document.body.style.overflow = 'hidden';
-                    }
-                });
-                
-                // Close menu when clicking navigation links
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        if (footerMenu.classList.contains('active')) {
-                            footerMenu.classList.remove('active');
-                            footerHamburger.classList.remove('active');
-                            document.body.style.overflow = '';
-                        }
-                    });
-                });
-                
-                // Close menu when clicking outside (on overlay)
-                footerMenu.addEventListener('click', function(e) {
-                    if (e.target === footerMenu && footerMenu.classList.contains('active')) {
-                        footerMenu.classList.remove('active');
-                        footerHamburger.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                });
-                
-                // Close menu on window resize if open
-                window.addEventListener('resize', function() {
-                    if (window.innerWidth > 768 && footerMenu.classList.contains('active')) {
-                        footerMenu.classList.remove('active');
-                        footerHamburger.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                });
-                
-                console.log('✅ Mobile navbar hamburger menu initialized');
-            } else {
-                console.error('❌ Navbar hamburger button or menu not found!');
-            }
-        });
-        
         // Function to initialize main cursor functionality
         function initMainCursor(cursorElement) {
             const isMobile = window.innerWidth <= 768;
@@ -7979,6 +7770,10 @@
                 enterCoreBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     console.log('🎯 ENTER CORE clicked!');
+                    
+                    // ✅ Usuń blokadę scrollowania - przywróć normalność
+                    document.body.classList.remove('splash-active');
+                    console.log('✅ Scrollowanie odblokowane!');
                     
                     // Hide splash cursor before transition
                     if (splashCursor) {
