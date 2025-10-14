@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const OpenAI = require("openai");
+const { toFile } = require("openai/uploads");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
@@ -50,7 +51,7 @@ app.use((req, res, next) => {
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // Reduced to 5MB for better performance
+    fileSize: 15 * 1024 * 1024, // Increase to 15MB to accommodate larger PNGs
     files: 1
   },
   fileFilter: (req, file, cb) => {
@@ -147,8 +148,7 @@ app.post("/api/generate-avatar", upload.single("image"), async (req, res) => {
       model: "gpt-image-1", 
       image: imageFile,
       prompt: enhancedStylePrompt,
-      size: "1024x1024",
-      response_format: "b64_json" // Request base64 directly to avoid additional fetch
+      size: "1024x1024"
     });
 
     const openAIDuration = Date.now() - openAIStart;
@@ -194,7 +194,24 @@ app.post("/api/generate-avatar", upload.single("image"), async (req, res) => {
   } catch (err) {
     const totalDuration = Date.now() - requestStart;
     console.error(`/api/generate-avatar error after ${totalDuration}ms:`, err.message);
-    
+    if (err) {
+      console.error('OpenAI error details:', {
+        status: err.status,
+        code: err.code,
+        type: err.type,
+        message: err.message,
+      });
+      if (err.response) {
+        console.error('OpenAI response status:', err.response.status);
+        try {
+          console.error('OpenAI response data:', JSON.stringify(err.response.data));
+          if (err.response.data?.error?.message) {
+            console.error('OpenAI error message:', err.response.data.error.message);
+          }
+        } catch {}
+      }
+    }
+
     // Enhanced error handling
     let status = 500;
     let errorCode = "UNKNOWN_ERROR";
@@ -220,9 +237,170 @@ app.post("/api/generate-avatar", upload.single("image"), async (req, res) => {
   }
 });
 
+// Apply Core Style transformation
+app.post("/api/apply-style", upload.single("image"), async (req, res) => {
+  const requestStart = Date.now();
+  console.log("=== APPLY STYLE REQUEST ===");
+  console.log("File size:", req.file?.size, "bytes");
+  console.log("Style:", req.body.style);
+  console.log("Prompt:", req.body.prompt);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ 
+        error: "No image uploaded",
+        code: "MISSING_FILE"
+      });
+    }
+
+    if (!req.body.prompt) {
+      return res.status(400).json({ 
+        error: "No style prompt provided",
+        code: "MISSING_PROMPT"
+      });
+    }
+
+    // Optimize image before sending to OpenAI (must be PNG for edits)
+    let optimizedBuffer;
+    try {
+      optimizedBuffer = await sharp(req.file.buffer)
+        .resize(1024, 1024, {
+          fit: 'cover',
+          position: 'center'
+        })
+        .png({
+          quality: 90,
+          compressionLevel: 6
+        })
+        .toBuffer();
+      
+      console.log(`Image optimized: ${req.file.size} -> ${optimizedBuffer.length} bytes`);
+    } catch (sharpError) {
+      console.error("Image optimization failed:", sharpError);
+      optimizedBuffer = req.file.buffer; // Fallback to original
+    }
+
+    // Create file object using OpenAI helper
+    const imageFile = await toFile(optimizedBuffer, 'current-frame.png', {
+      type: 'image/png'
+    });
+    
+    console.log("Sending style transform request to OpenAI...");
+    const openAIStart = Date.now();
+    
+    // Use OpenAI image edit with gpt-image-1
+    const editOptions = {
+      model: "gpt-image-1", 
+      image: imageFile,
+      prompt: req.body.prompt,
+      size: "1024x1024"
+    };
+    console.log('OpenAI edit options keys:', Object.keys(editOptions));
+    console.log('Has response_format?', Object.prototype.hasOwnProperty.call(editOptions, 'response_format'));
+    const response = await openai.images.edit(editOptions);
+
+    const openAIDuration = Date.now() - openAIStart;
+    console.log(`OpenAI response time: ${openAIDuration}ms`);
+
+    const dataItem = response?.data?.[0];
+    if (!dataItem?.b64_json && !dataItem?.url) {
+      console.error("OpenAI returned unexpected payload", response);
+      return res.status(502).json({ 
+        error: "OpenAI did not return an image",
+        code: "NO_IMAGE_RETURNED"
+      });
+    }
+
+    // Handle response
+    let imageData;
+    if (dataItem.b64_json) {
+      imageData = dataItem.b64_json;
+    } else if (dataItem.url) {
+      console.log("Fetching image from URL:", dataItem.url);
+      const imageResponse = await fetch(dataItem.url, { 
+        timeout: 15000
+      });
+      
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+      }
+      
+      const imageBuffer = await imageResponse.arrayBuffer();
+      imageData = Buffer.from(imageBuffer).toString('base64');
+    }
+
+    const totalDuration = Date.now() - requestStart;
+    console.log(`Total style transform time: ${totalDuration}ms`);
+
+    res.json({ 
+      image: imageData, 
+      style: req.body.style,
+      processingTime: totalDuration,
+      success: true
+    });
+    
+  } catch (err) {
+    const totalDuration = Date.now() - requestStart;
+    console.error(`/api/apply-style error after ${totalDuration}ms:`, err.message);
+    if (err) {
+      console.error('OpenAI error details:', {
+        status: err.status,
+        code: err.code,
+        type: err.type,
+        message: err.message,
+      });
+      if (err.response) {
+        try {
+          console.error('OpenAI error status:', err.response.status);
+          console.error('OpenAI error data:', JSON.stringify(err.response.data));
+          if (err.response.data?.error?.message) {
+            console.error('OpenAI error message:', err.response.data.error.message);
+          }
+        } catch (e) {
+          console.error('Failed to stringify OpenAI error response');
+        }
+      }
+    }
+    
+    let status = 500;
+    let errorCode = "UNKNOWN_ERROR";
+    
+    if (err.status) status = err.status;
+    if (err.code === 'ENOTFOUND') {
+      status = 503;
+      errorCode = "NETWORK_ERROR";
+    } else if (err.message?.includes('timeout')) {
+      status = 408;
+      errorCode = "TIMEOUT";
+    } else if (err.message?.includes('rate limit')) {
+      status = 429;
+      errorCode = "RATE_LIMITED";
+    }
+    
+    res.status(status).json({ 
+      error: "Style transformation failed", 
+      details: err.message,
+      code: errorCode,
+      processingTime: totalDuration
+    });
+  }
+});
+
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Unhandled error:', error);
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        error: 'File too large. Maximum size is 15MB.',
+        code: 'FILE_TOO_LARGE'
+      });
+    }
+    return res.status(400).json({
+      error: 'Upload error',
+      code: error.code || 'UPLOAD_ERROR'
+    });
+  }
   res.status(500).json({
     error: 'Internal server error',
     code: 'INTERNAL_ERROR'
@@ -239,6 +417,11 @@ app.use(express.static('.', {
 app.get('/', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.sendFile(path.join(process.cwd(), 'index.html'));
+});
+
+// Backward compatible redirect for old dashboard URL
+app.get('/dashboard.html', (req, res) => {
+  res.redirect(302, '/dashboard/index.html');
 });
 
 const PORT = Number(process.env.PORT || 3000);

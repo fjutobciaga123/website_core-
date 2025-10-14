@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CORE Creative Dashboard - PFP Generator & Editor">
+    <title>Creative Dashboard - CORE</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="/images/favicon.jpg">
+    
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="corelogo.svg" as="image" type="image/svg+xml">
+    
+    <style>
+        /* ===== CORE COLOR PALETTE - EXACT FROM MAIN SITE ===== */
+        :root {
+            --core-blue: #0099ff;
+            --core-blue-dark: #0066cc;
+            --core-cyan: #00ffff;
+            --core-dark-blue: #000408;
+            --core-navy: #000205;
+            --core-glow-blue: #0099ff80;
+            --core-glow-cyan: #00ffff40;
+            --core-text-blue: #66ccff;
+            --core-accent: #0080ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Force cursor visibility on all interactive elements */
+        button, a, input, select, textarea, [role="button"], .clickable {
+            cursor: pointer !important;
+        }
+
+        input[type="file"] {
+            cursor: pointer !important;
+        }
+
+        canvas {
+            cursor: grab !important;
+        }
+
+        canvas:active {
+            cursor: grabbing !important;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            cursor: default !important;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #001433 0%, #001433 30%, #001228 50%, #000a1a 75%, #000204 100%);
+            background-attachment: fixed;
+            color: white;
+            position: relative;
+        }
+        
+        /* Animated Stars Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== DASHBOARD CONTAINER ===== */
+        .dashboard-wrapper {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== DASHBOARD HEADER ===== */
+        .dashboard-header {
+            background: rgba(0, 25, 40, 0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+            border-bottom: 1px solid rgba(0, 153, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 100;
+        }
+
+        .dashboard-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            cursor: pointer !important;
+            z-index: 1000;
+            pointer-events: auto;
+        }
+
+        .dashboard-logo img {
+            width: 60px;
+            height: 60px;
+            transform: translateY(1px);
+        }
+
+        .dashboard-logo h1 {
+            font-size: 0.9rem;
+            color: var(--core-cyan);
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--core-glow-cyan);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .back-btn {
+            padding: 8px 20px;
+            background: rgba(0, 25, 40, 0.3);
+            border: none;
+            color: var(--core-text-blue);
+            border-radius: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 0 10px var(--core-glow-blue);
+            position: relative;
+            overflow: hidden;
+            z-index: 1000;
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 25, 40, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.08);
+            text-shadow: 0 0 20px var(--core-cyan);
+            transform: translateY(-2px) scale(1.05);
+            color: var(--core-cyan);
+        }
+
+        .back-btn:hover::before {
+            left: 100%;
+        }
+
+        /* ===== DASHBOARD LAYOUT ===== */
+        .dashboard-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 30% 70%;
+            gap: 1.25rem;
+            padding: 1.25rem;
+            overflow: hidden;
+        }
+
+        /* ===== LEFT PANEL - PFP GENERATOR ===== */
+        .pfp-panel {
+            background: rgba(0, 25, 40, 0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+            border-radius: 0;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pfp-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .pfp-panel:hover::before {
+            left: 100%;
+        }
+
+        .pfp-title {
+            font-size: 0.9rem;
+            color: var(--core-cyan);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--core-glow-cyan);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .pfp-subtitle {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 200;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .pfp-upload-area {
+            flex: 1;
+            background: rgba(0, 4, 8, 0.5);
+            border: 2px dashed rgba(0, 153, 255, 0.3);
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pfp-upload-area:hover {
+            border-color: var(--core-cyan);
+            background: rgba(0, 4, 8, 0.7);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--core-blue);
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+
+        .upload-text {
+            font-size: 0.85rem;
+            color: var(--core-text-blue);
+            margin-bottom: 0.3rem;
+            font-weight: 200;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .upload-hint {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1rem;
+            font-weight: 200;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .upload-button {
+            padding: 8px 20px;
+            background: rgba(0, 25, 40, 0.3);
+            border: none;
+            color: var(--core-text-blue);
+            border-radius: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 0 10px var(--core-glow-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .upload-button:hover {
+            background: rgba(0, 25, 40, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.08);
+            text-shadow: 0 0 20px var(--core-cyan);
+            transform: translateY(-2px) scale(1.05);
+            color: var(--core-cyan);
+        }
+
+        .upload-button:hover::before {
+            left: 100%;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 8px 20px;
+            margin-top: 1rem;
+            background: rgba(0, 25, 40, 0.3);
+            border: none;
+            color: var(--core-text-blue);
+            border-radius: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 0 10px var(--core-glow-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            background: rgba(0, 25, 40, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.08);
+            text-shadow: 0 0 20px var(--core-cyan);
+            transform: translateY(-2px) scale(1.05);
+            color: var(--core-cyan);
+        }
+
+        .generate-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed !important;
+        }
+
+        /* ===== RIGHT PANEL - CORE EDITOR ===== */
+        .editor-panel {
+            background: rgba(0, 25, 40, 0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+            border-radius: 0;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .editor-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .editor-panel:hover::before {
+            left: 100%;
+        }
+
+        .editor-title {
+            font-size: 0.9rem;
+            color: var(--core-cyan);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--core-glow-cyan);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .editor-subtitle {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 200;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .editor-canvas-area {
+            flex: 1;
+            min-height: 0;
+            background: rgba(0, 4, 8, 0.5);
+            border: 1px solid rgba(0, 153, 255, 0.2);
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-upload-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+        }
+
+        .editor-upload-placeholder:hover {
+            background: rgba(0, 153, 255, 0.05);
+        }
+
+        .editor-upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+
+        #editorCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab !important;
+        }
+
+        #editorCanvas:active {
+            cursor: grabbing !important;
+        }
+
+        .editor-controls {
+            display: flex;
+            flex-direction: row;
+            gap: 0.3rem;
+            flex-shrink: 0;
+            align-items: stretch;
+            width: 100%;
+            height: 95px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .control-group {
+            background: rgba(0, 4, 8, 0.3);
+            border: 1px solid rgba(0, 153, 255, 0.1);
+            border-radius: 0;
+            padding: 0.2rem;
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .control-group::-webkit-scrollbar {
+            width: 3px;
+        }
+        
+        .control-group::-webkit-scrollbar-track {
+            background: rgba(0, 4, 8, 0.3);
+        }
+        
+        .control-group::-webkit-scrollbar-thumb {
+            background: rgba(0, 153, 255, 0.4);
+            border-radius: 0;
+        }
+
+        .control-group h3 {
+            font-size: 0.75rem;
+            color: var(--core-cyan);
+            margin-bottom: 0.3rem;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px var(--core-glow-cyan);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            white-space: nowrap;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 6px 8px;
+            margin-bottom: 0.25rem;
+            background: rgba(0, 25, 40, 0.3);
+            color: var(--core-text-blue);
+            border: none;
+            border-radius: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            line-height: 1.1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-transform: uppercase;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 0 10px var(--core-glow-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .control-button:hover {
+            background: rgba(0, 25, 40, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.08);
+            text-shadow: 0 0 20px var(--core-cyan);
+            transform: translateY(-2px) scale(1.05);
+            color: var(--core-cyan);
+        }
+
+        .control-button:hover::before {
+            left: 100%;
+        }
+
+        .control-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed !important;
+            background: rgba(0, 25, 40, 0.2);
+        }
+
+        .control-button:disabled:hover {
+            background: rgba(0, 25, 40, 0.2);
+            transform: none;
+            text-shadow: 0 0 10px var(--core-glow-blue);
+            color: var(--core-text-blue);
+        }
+
+        .control-button:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-slider {
+            margin-top: 0.1rem;
+            margin-bottom: 0.1rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--core-text-blue);
+            font-weight: 200;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .control-slider input[type="range"] {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 153, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .control-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--core-text-blue);
+            border-radius: 50%;
+            cursor: pointer !important;
+            box-shadow: 0 0 8px var(--core-glow-blue);
+        }
+
+        .control-slider input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: var(--core-text-blue);
+            border-radius: 50%;
+            cursor: pointer !important;
+            border: none;
+            box-shadow: 0 0 8px var(--core-glow-blue);
+        }
+
+        .editor-file-input {
+            display: none;
+        }
+
+        /* Core Style Selection */
+        .style-toggle-btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .toggle-arrow {
+            font-size: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .style-toggle-btn.open .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .core-style-dropdown {
+            position: fixed;
+            background: rgba(0, 4, 8, 0.98);
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 0;
+            margin-top: 0;
+            max-height: 150px;
+            min-width: 120px;
+            overflow-y: auto;
+            z-index: 10000;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .core-style-dropdown::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .core-style-dropdown::-webkit-scrollbar-track {
+            background: rgba(0, 4, 8, 0.5);
+        }
+
+        .core-style-dropdown::-webkit-scrollbar-thumb {
+            background: rgba(0, 153, 255, 0.5);
+            border-radius: 0;
+        }
+
+        .core-style-option {
+            padding: 0.3rem 0.4rem;
+            cursor: pointer !important;
+            transition: all 0.2s ease;
+            font-size: 0.55rem;
+            color: var(--core-text-blue);
+            font-weight: 200;
+            letter-spacing: 0.06em;
+            line-height: 1.3;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-bottom: 1px solid rgba(0, 153, 255, 0.1);
+            white-space: nowrap;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .core-style-option:last-child {
+            border-bottom: none;
+        }
+
+        .core-style-option:hover {
+            background: rgba(0, 153, 255, 0.15);
+            color: var(--core-cyan);
+            text-shadow: 0 0 10px var(--core-cyan);
+        }
+
+        .core-style-option.selected {
+            background: rgba(0, 153, 255, 0.25);
+            color: var(--core-cyan);
+            border-left: 2px solid var(--core-cyan);
+        }
+
+        .core-style-card.selected .core-style-name {
+            color: var(--core-cyan);
+        }
+
+        /* Loading spinner for generate button */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1400px) {
+            .dashboard-container {
+                grid-template-columns: 35% 65%;
+                gap: 1rem;
+            }
+            
+            .editor-controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 40% 60%;
+            }
+            
+            .pfp-title, .editor-title {
+                font-size: 0.85rem;
+            }
+            
+            .control-button {
+                font-size: 0.6rem;
+                padding: 5px 10px;
+            }
+            
+            .control-group {
+                padding: 0.4rem;
+            }
+            
+            .control-group h3 {
+                font-size: 0.55rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .pfp-panel {
+                max-height: 45vh;
+            }
+
+            .editor-controls {
+                height: 70px;
+                gap: 0.25rem;
+            }
+            
+            .control-group {
+                padding: 0.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 0.6rem 1rem;
+            }
+
+            .dashboard-logo h1 {
+                font-size: 0.85rem;
+            }
+            
+            .dashboard-logo img {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .back-btn {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .dashboard-container {
+                padding: 0.75rem;
+                gap: 0.75rem;
+            }
+            
+            .pfp-panel, .editor-panel {
+                padding: 1rem;
+            }
+
+            .editor-controls {
+                height: 65px;
+                gap: 0.2rem;
+            }
+
+            .core-style-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.3rem;
+            }
+            
+            .core-style-icon {
+                font-size: 1.2rem;
+            }
+            
+            .core-style-name {
+                font-size: 0.55rem;
+            }
+            
+            .control-button {
+                font-size: 0.7rem;
+                padding: 6px 16px;
+            }
+            
+            .control-group h3 {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pfp-panel {
+                max-height: 50vh;
+            }
+            
+            .editor-controls {
+                height: 60px;
+                gap: 0.15rem;
+            }
+            
+            .control-group {
+                padding: 0.15rem;
+            }
+            
+            .upload-icon {
+                font-size: 2.5rem;
+            }
+            
+            .editor-upload-icon {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-logo h1 {
+                display: none;
+            }
+            
+            .back-btn {
+                font-size: 0.55rem;
+            }
+            
+            .pfp-title, .editor-title {
+                font-size: 0.75rem;
+            }
+            
+            .pfp-subtitle, .editor-subtitle {
+                font-size: 0.55rem;
+            }
+            
+            .core-style-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Stars Background -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <div class="dashboard-wrapper">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <a href="../index.html?skipSplash=1#top-section" class="dashboard-logo">
+                <img src="corelogo.svg" alt="CORE">
+                <h1>CREATIVE DASHBOARD</h1>
+            </a>
+            <a href="../index.html?skipSplash=1#top-section" class="back-btn">← BACK TO HOME</a>
+        </header>
+
+        <!-- Dashboard Main Container -->
+        <div class="dashboard-container">
+        <!-- LEFT: PFP GENERATOR -->
+        <div class="pfp-panel">
+            <h3 class="pfp-title">PFP GENERATOR</h3>
+            <p class="pfp-subtitle">Transform your image with CORE aura effects</p>
+            
+            <div class="pfp-upload-area" id="pfpMainArea">
+                <div class="upload-icon">+</div>
+                <div class="upload-text">Upload or drag an image here</div>
+                <div class="upload-hint">to generate its aura</div>
+                <button class="upload-button" id="pfpUploadBtn">UPLOAD AN IMAGE</button>
+                <input type="file" id="pfpImageInput" accept="image/*" style="display: none;">
+            </div>
+            
+            <button class="generate-btn" id="pfpGenerateBtn" disabled>
+                Generate CORE Aura
+            </button>
+        </div>
+
+        <!-- RIGHT: CORE EDITOR -->
+        <div class="editor-panel">
+            <h3 class="editor-title">CORE EDITOR</h3>
+            <p class="editor-subtitle">Upload image/video to add CORE logo overlay</p>
+            
+            <div class="editor-canvas-area">
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <div class="editor-upload-placeholder" id="uploadPlaceholder">
+                        <div class="editor-upload-icon">📁</div>
+                        <p style="font-size: 1rem; margin-bottom: 0.4rem; font-weight: 300;">Upload your image or video</p>
+                        <p style="font-size: 0.85rem; opacity: 0.6;">Click to browse or drag and drop</p>
+                    </div>
+                    <canvas id="editorCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
+            
+            <div class="editor-controls">
+                <!-- Upload Controls -->
+                <div class="control-group">
+                    <h3>📂 MEDIA</h3>
+                    <button class="control-button" id="uploadMediaBtn">Upload</button>
+                    <input type="file" id="editorMediaInput" class="editor-file-input" accept="image/*,video/*">
+                    <button class="control-button" id="clearCanvasBtn" style="display: none;">Clear</button>
+                </div>
+                
+                <!-- Logo Controls -->
+                <div class="control-group" id="logoControls">
+                    <h3>✨ LOGO</h3>
+                    <button class="control-button" id="addLogoBtn" disabled>Add</button>
+                    <button class="control-button" id="removeLogoBtn" style="display: none;">Remove</button>
+                    <button class="control-button" id="centerLogoBtn" style="display: none;">Center</button>
+                    
+                    <div class="control-slider" id="logoSizeControl" style="display: none;">
+                        <div class="slider-label">
+                            <span>Size</span>
+                            <span id="logoSizeValue">100</span>
+                        </div>
+                        <input type="range" id="logoSize" min="50" max="500" value="100">
+                    </div>
+                    
+                    <div class="control-slider" id="logoOpacityControl" style="display: none;">
+                        <div class="slider-label">
+                            <span>Opacity</span>
+                            <span id="logoOpacityValue">100%</span>
+                        </div>
+                        <input type="range" id="logoOpacity" min="0" max="100" value="100">
+                    </div>
+                </div>
+                
+                <!-- Core Style Selection -->
+                <div class="control-group" id="coreStyleControls">
+                    <h3>🎨 STYLE</h3>
+                    <button class="control-button style-toggle-btn" id="styleToggleBtn" disabled>
+                        <span id="selectedStyleName">Select Style</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="core-style-dropdown" id="styleDropdown" style="display: none;">
+                        <div class="core-style-option" data-style="cybercore">CYBERCORE</div>
+                        <div class="core-style-option" data-style="dreamcore">DREAMCORE</div>
+                        <div class="core-style-option" data-style="weirdcore">WEIRDCORE</div>
+                        <div class="core-style-option" data-style="vaporcore">VAPORCORE</div>
+                        <div class="core-style-option" data-style="anime">ANIMECORE</div>
+                        <div class="core-style-option" data-style="manga">MANGACORE</div>
+                        <div class="core-style-option" data-style="cottage">COTTAGECORE</div>
+                        <div class="core-style-option" data-style="hopecore">HOPECORE</div>
+                        <div class="core-style-option" data-style="royal">ROYALCORE</div>
+                        <div class="core-style-option" data-style="moneycore">MONEYCORE</div>
+                        <div class="core-style-option" data-style="frutiger">FRUTIGER AERO</div>
+                        <div class="core-style-option" data-style="ravecore">RAVECORE</div>
+                        <div class="core-style-option" data-style="pixelcore">PIXELCORE</div>
+                        <div class="core-style-option" data-style="alonecore">ALONECORE</div>
+                        <div class="core-style-option" data-style="raptorcore">RAPTORCORE</div>
+                        <div class="core-style-option" data-style="clowncore">CLOWNCORE</div>
+                        <div class="core-style-option" data-style="auracore">AURACORE</div>
+                        <div class="core-style-option" data-style="spacecore">SPACECORE</div>
+                        <div class="core-style-option" data-style="catcore">CATCORE</div>
+                        <div class="core-style-option" data-style="dogcore">DOGCORE</div>
+                    </div>
+                    <button class="control-button" id="applyStyleBtn" style="display: none; margin-top: 0.25rem;">Apply</button>
+                </div>
+                
+                <!-- Export Controls -->
+                <div class="control-group" id="exportControls">
+                    <h3>💾 EXPORT</h3>
+                    <button class="control-button" id="exportBtn" disabled>Download</button>
+                    <p id="exportNote" style="font-size: 0.35rem; color: rgba(255,255,255,0.5); margin-top: 0.1rem; text-align: center; line-height: 1;">
+                        Ready
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // ===== STARS ANIMATION =====
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 50;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDuration = Math.random() * 3 + 2 + 's';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(star);
+            }
+        }
+        
+        createStars();
+    </script>
+
+    <script>
+        // ===== PFP GENERATOR FUNCTIONALITY =====
+        let uploadedPfpFile = null;
+        let uploadedPfpImage = null;
+
+        const pfpMainArea = document.getElementById('pfpMainArea');
+        const pfpUploadBtn = document.getElementById('pfpUploadBtn');
+        const pfpImageInput = document.getElementById('pfpImageInput');
+        const pfpGenerateBtn = document.getElementById('pfpGenerateBtn');
+
+        // Upload handlers
+        pfpUploadBtn.addEventListener('click', () => pfpImageInput.click());
+        pfpMainArea.addEventListener('click', (e) => {
+            if (e.target === pfpMainArea || e.target.classList.contains('upload-icon') || 
+                e.target.classList.contains('upload-text') || e.target.classList.contains('upload-hint')) {
+                pfpImageInput.click();
+            }
+        });
+        
+        // Drag & Drop for PFP Generator
+        pfpMainArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            pfpMainArea.style.borderColor = 'var(--core-cyan)';
+            pfpMainArea.style.background = 'rgba(0, 255, 255, 0.05)';
+        });
+        
+        pfpMainArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            pfpMainArea.style.borderColor = 'rgba(0, 153, 255, 0.3)';
+            pfpMainArea.style.background = 'rgba(0, 25, 40, 0.2)';
+        });
+        
+        pfpMainArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            pfpMainArea.style.borderColor = 'rgba(0, 153, 255, 0.3)';
+            pfpMainArea.style.background = 'rgba(0, 25, 40, 0.2)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    // Trigger the same upload handler
+                    uploadedPfpFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadedPfpImage = new Image();
+                        uploadedPfpImage.onload = () => {
+                            pfpMainArea.style.backgroundImage = `url('${event.target.result}')`;
+                            pfpMainArea.style.backgroundSize = 'cover';
+                            pfpMainArea.style.backgroundPosition = 'center';
+                            pfpMainArea.innerHTML = '<div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 0.3rem 0.5rem; border-radius: 0; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;">✓ Ready</div>';
+                            pfpGenerateBtn.disabled = false;
+                            pfpGenerateBtn.textContent = 'Generate CORE Aura';
+                        };
+                        uploadedPfpImage.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        pfpImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                uploadedPfpFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedPfpImage = new Image();
+                    uploadedPfpImage.onload = () => {
+                        pfpMainArea.style.backgroundImage = `url('${event.target.result}')`;
+                        pfpMainArea.style.backgroundSize = 'cover';
+                        pfpMainArea.style.backgroundPosition = 'center';
+                        pfpMainArea.innerHTML = '<div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 0.3rem 0.5rem; border-radius: 0; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;">✓ Ready</div>';
+                        pfpGenerateBtn.disabled = false;
+                        pfpGenerateBtn.textContent = 'Generate CORE Aura';
+                    };
+                    uploadedPfpImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Generate CORE Aura with API
+        pfpGenerateBtn.addEventListener('click', async () => {
+            if (!uploadedPfpFile) return;
+
+            pfpGenerateBtn.disabled = true;
+            pfpGenerateBtn.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <div style="width: 12px; height: 12px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    Generating...
+                </div>
+            `;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', uploadedPfpFile);
+
+                const response = await fetch('/api/generate-avatar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    let msg = `API error: ${response.status}`;
+                    try {
+                        const err = await response.json();
+                        if (err?.code || err?.error || err?.details) {
+                            msg += ` - ${[err.code, err.error, err.details].filter(Boolean).join(' | ')}`;
+                        }
+                    } catch {}
+                    throw new Error(msg);
+                }
+
+                const result = await response.json();
+
+                if (result.image) {
+                    const imageUrl = `data:image/png;base64,${result.image}`;
+                    showPfpResult(imageUrl);
+                } else {
+                    throw new Error(result.error || 'Generation failed');
+                }
+
+            } catch (error) {
+                console.error('Error generating CORE aura:', error);
+                alert(`Error: ${error.message}\n\nPlease try again or use a different image.`);
+                pfpGenerateBtn.disabled = false;
+                pfpGenerateBtn.textContent = 'Generate CORE Aura';
+            }
+        });
+
+        function showPfpResult(imageUrl) {
+            pfpMainArea.style.backgroundImage = `url('${imageUrl}')`;
+            pfpMainArea.innerHTML = `
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.7);">
+                    <div style="font-size: 0.75rem; color: var(--core-cyan); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">✨ Transformation Complete</div>
+                    <button id="downloadPfpResult" style="padding: 0.6rem 1.2rem; background: rgba(0, 25, 40, 0.6); border: none; color: var(--core-cyan); border-radius: 0; font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; margin-bottom: 0.5rem;">Download</button>
+                    <button id="pfpNewImage" style="padding: 0.6rem 1.2rem; background: rgba(0, 25, 40, 0.4); border: none; color: var(--core-text-blue); border-radius: 0; font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;">New Image</button>
+                </div>
+            `;
+
+            document.getElementById('downloadPfpResult').addEventListener('click', () => {
+                const a = document.createElement('a');
+                a.href = imageUrl;
+                a.download = `core-aura-${Date.now()}.png`;
+                a.click();
+            });
+
+            document.getElementById('pfpNewImage').addEventListener('click', () => {
+                resetPfpGenerator();
+            });
+
+            pfpGenerateBtn.style.display = 'none';
+        }
+
+        function resetPfpGenerator() {
+            pfpMainArea.style.backgroundImage = '';
+            pfpMainArea.innerHTML = `
+                <div class="upload-icon">+</div>
+                <div class="upload-text">Upload or drag an image here</div>
+                <div class="upload-hint">to generate its aura</div>
+                <button class="upload-button" id="pfpUploadBtn2">UPLOAD AN IMAGE</button>
+            `;
+            document.getElementById('pfpUploadBtn2').addEventListener('click', () => pfpImageInput.click());
+            uploadedPfpFile = null;
+            uploadedPfpImage = null;
+            pfpGenerateBtn.style.display = 'block';
+            pfpGenerateBtn.disabled = true;
+            pfpGenerateBtn.textContent = 'Generate CORE Aura';
+            pfpImageInput.value = '';
+        }
+
+        // ===== CORE EDITOR FUNCTIONALITY =====
+        class CoreEditor {
+            constructor() {
+                this.canvas = document.getElementById('editorCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.uploadPlaceholder = document.getElementById('uploadPlaceholder');
+                this.canvasWrapper = document.getElementById('canvasWrapper');
+                
+                // Buttons
+                this.uploadMediaBtn = document.getElementById('uploadMediaBtn');
+                this.editorMediaInput = document.getElementById('editorMediaInput');
+                this.clearCanvasBtn = document.getElementById('clearCanvasBtn');
+                this.addLogoBtn = document.getElementById('addLogoBtn');
+                this.removeLogoBtn = document.getElementById('removeLogoBtn');
+                this.centerLogoBtn = document.getElementById('centerLogoBtn');
+                this.exportBtn = document.getElementById('exportBtn');
+                
+                // Controls
+                this.logoControls = document.getElementById('logoControls');
+                this.exportControls = document.getElementById('exportControls');
+                this.logoSizeControl = document.getElementById('logoSizeControl');
+                this.logoOpacityControl = document.getElementById('logoOpacityControl');
+                this.logoSizeSlider = document.getElementById('logoSize');
+                this.logoSizeValue = document.getElementById('logoSizeValue');
+                this.logoOpacitySlider = document.getElementById('logoOpacity');
+                this.logoOpacityValue = document.getElementById('logoOpacityValue');
+                
+                // Core Style Controls
+                this.coreStyleControls = document.getElementById('coreStyleControls');
+                this.styleToggleBtn = document.getElementById('styleToggleBtn');
+                
+                // State
+                this.currentMedia = null;
+                this.mediaType = null; // 'image' or 'video'
+                this.logo = null;
+                this.logoImage = null;
+                this.logoImageLoaded = false;
+                this.selectedCoreStyle = null;
+                this.isDragging = false;
+                this.dragOffset = { x: 0, y: 0 };
+                // Normalized Y anchor within the logo image (0..1),
+                // representing the visual center to align with canvas center.
+                // Defaults to 0.5 (image geometric center) until computed.
+                this.logoAnchorYNorm = 0.5;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.setupCanvas();
+                this.setupCoreStyleSelection();
+            }
+            
+            setupEventListeners() {
+                // Upload
+                this.uploadMediaBtn.addEventListener('click', () => this.editorMediaInput.click());
+                this.uploadPlaceholder.addEventListener('click', () => this.editorMediaInput.click());
+                this.editorMediaInput.addEventListener('change', (e) => this.handleMediaUpload(e));
+                
+                // Drag & Drop for upload placeholder
+                this.uploadPlaceholder.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.uploadPlaceholder.style.borderColor = 'var(--core-cyan)';
+                    this.uploadPlaceholder.style.background = 'rgba(0, 255, 255, 0.05)';
+                });
+                
+                this.uploadPlaceholder.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.uploadPlaceholder.style.borderColor = 'rgba(0, 153, 255, 0.3)';
+                    this.uploadPlaceholder.style.background = 'rgba(0, 25, 40, 0.2)';
+                });
+                
+                this.uploadPlaceholder.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.uploadPlaceholder.style.borderColor = 'rgba(0, 153, 255, 0.3)';
+                    this.uploadPlaceholder.style.background = 'rgba(0, 25, 40, 0.2)';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const file = files[0];
+                        if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                            // Trigger the same upload handler
+                            const fakeEvent = { target: { files: [file] } };
+                            this.handleMediaUpload(fakeEvent);
+                        }
+                    }
+                });
+                
+                // Clear
+                this.clearCanvasBtn.addEventListener('click', () => this.clearCanvas());
+                
+                // Logo
+                this.addLogoBtn.addEventListener('click', () => this.addLogo());
+                this.removeLogoBtn.addEventListener('click', () => this.removeLogo());
+                this.centerLogoBtn.addEventListener('click', () => this.centerLogo());
+                
+                // Sliders
+                this.logoSizeSlider.addEventListener('input', (e) => {
+                    this.logoSizeValue.textContent = e.target.value;
+                    if (this.logo) {
+                        this.logo.width = parseInt(e.target.value);
+                        this.logo.height = parseInt(e.target.value);
+                        this.render();
+                    }
+                });
+                
+                this.logoOpacitySlider.addEventListener('input', (e) => {
+                    this.logoOpacityValue.textContent = e.target.value + '%';
+                    if (this.logo) {
+                        this.logo.opacity = parseInt(e.target.value) / 100;
+                        this.render();
+                    }
+                });
+                
+                // Export
+                this.exportBtn.addEventListener('click', () => this.exportCanvas());
+                
+                // Canvas drag
+                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('mouseup', () => this.handleMouseUp());
+                this.canvas.addEventListener('mouseleave', () => this.handleMouseUp());
+                
+                // Window resize
+                window.addEventListener('resize', () => this.setupCanvas());
+            }
+            
+            setupCanvas() {
+                const rect = this.canvasWrapper.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                
+                const containerWidth = rect.width;
+                const containerHeight = rect.height;
+                
+                this.canvas.width = containerWidth * dpr;
+                this.canvas.height = containerHeight * dpr;
+                
+                this.canvas.style.width = containerWidth + 'px';
+                this.canvas.style.height = containerHeight + 'px';
+                
+                this.ctx.scale(dpr, dpr);
+                
+                this.canvasDisplayWidth = containerWidth;
+                this.canvasDisplayHeight = containerHeight;
+                
+                if (this.currentMedia) {
+                    this.render();
+                }
+            }
+            
+            setupCoreStyleSelection() {
+                const toggleBtn = document.getElementById('styleToggleBtn');
+                const dropdown = document.getElementById('styleDropdown');
+                const applyBtn = document.getElementById('applyStyleBtn');
+                const selectedStyleName = document.getElementById('selectedStyleName');
+                const styleOptions = document.querySelectorAll('.core-style-option');
+                
+                // Move dropdown to body to avoid overflow issues
+                document.body.appendChild(dropdown);
+                
+                let currentSelectedStyle = null;
+                let currentSelectedStyleName = null;
+                
+                // Toggle dropdown
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = dropdown.style.display === 'block';
+                    
+                    if (isOpen) {
+                        dropdown.style.display = 'none';
+                        toggleBtn.classList.remove('open');
+                    } else {
+                        // Position dropdown below button
+                        const rect = toggleBtn.getBoundingClientRect();
+                        dropdown.style.top = `${rect.bottom + 4}px`;
+                        dropdown.style.left = `${rect.left}px`;
+                        dropdown.style.width = `${rect.width}px`;
+                        dropdown.style.display = 'block';
+                        toggleBtn.classList.add('open');
+                        
+                        console.log('Dropdown opened:', {
+                            top: dropdown.style.top,
+                            left: dropdown.style.left,
+                            width: dropdown.style.width,
+                            display: dropdown.style.display,
+                            options: styleOptions.length
+                        });
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.style.display = 'none';
+                        toggleBtn.classList.remove('open');
+                    }
+                });
+                
+                // Handle option selection
+                styleOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (!this.currentMedia) {
+                            alert('Please upload an image or video first');
+                            return;
+                        }
+                        
+                        // Remove selected from all
+                        styleOptions.forEach(opt => opt.classList.remove('selected'));
+                        // Add selected to clicked
+                        option.classList.add('selected');
+                        
+                        currentSelectedStyle = option.getAttribute('data-style');
+                        currentSelectedStyleName = option.textContent;
+                        
+                        // Update button text
+                        selectedStyleName.textContent = currentSelectedStyleName;
+                        
+                        // Show apply button
+                        applyBtn.style.display = 'block';
+                        
+                        // Close dropdown
+                        dropdown.style.display = 'none';
+                        toggleBtn.classList.remove('open');
+                    });
+                });
+                
+                // Apply style transformation
+                applyBtn.addEventListener('click', async () => {
+                    if (!currentSelectedStyle) return;
+                    
+                    // Show loading
+                    const originalText = applyBtn.textContent;
+                    applyBtn.textContent = 'Processing...';
+                    applyBtn.disabled = true;
+                    
+                    try {
+                        await this.applyStyleTransform(currentSelectedStyle, currentSelectedStyleName);
+                    } catch (error) {
+                        console.error('Style transform error:', error);
+                        alert(`Error applying ${currentSelectedStyleName} style: ${error.message}`);
+                    } finally {
+                        applyBtn.textContent = originalText;
+                        applyBtn.disabled = false;
+                    }
+                });
+            }
+            
+            async applyStyleTransform(style, styleName) {
+                // Get current frame as blob
+                const blob = await new Promise(resolve => {
+                    this.canvas.toBlob(resolve, 'image/png');
+                });
+                
+                // Define style prompts
+                const stylePrompts = {
+                    'cybercore': 'transform this image into CyberCore style - maintain the original composition and subject, preserving the original color palette and lighting. infuse the scene with a futuristic, cyberpunk-inspired atmosphere that enhances what\'s already there rather than replacing it. add glowing circuitry patterns, digital data streams, holographic overlays, and faint light reflections across metallic or reflective surfaces. subtly integrate faint, glowing infinity symbols drifting in the background or reflected on surfaces - they should feel woven into the scene\'s energy, like repeating loops of light data, not overt logos. include soft ambient fog illuminated by holographic light sources and minimal lens flare. everything should pulse gently with digital life while preserving the original emotional tone and structure. generate as a 1x1 image ratio.',
+                    'dreamcore': 'transform this image into DreamCore style - maintain the original composition, subject, and color palette, but soften the atmosphere into something surreal, ethereal, and emotionally immersive. add hazy dream-like fog, soft depth blur, faint glowing particles drifting through the air, and gentle light leaks that feel nostalgic or otherworldly. subtly integrate faint, glowing infinity symbols within the scene\'s haze or reflections - they should appear as part of the dream\'s flow, repeating softly like echoes of thought. preserve the emotional tone of the original, but make it feel suspended between memory and imagination. generate as a 1x1 image ratio.',
+                    'weirdcore': 'transform this image into WeirdCore style - keep the same subject and colors, but make the world feel wrong. twist the perspective slightly, bend edges, and shift focus so the space doesn\'t add up. introduce faint VHS static, data-moshing, color banding, and chromatic bleeding. let the lighting flicker or hum. repeat or mirror small details where they shouldn\'t be - a doorway twice, an eye misaligned, a clock missing hands. add soft grain and low hum haze. weave in a few glowing infinity symbols that appear broken or half-rendered, flickering between frames as if the scene is trying to remember itself. the feeling should be nostalgic, uncanny, and slightly anxious, like you\'re seeing a memory through a malfunctioning lens. generate as a 1x1 image ratio.',
+                    'vaporcore': 'transform this image into VaporwaveCore style - maintain the original composition and subject, but reimagine the world with nostalgic digital surrealism. overlay faint retro-futuristic textures, greek statues, gradient skies, palm trees, and chrome reflections subtly within the scene\'s depth. add gentle scanlines, lo-fi pixel noise, and soft neon glow reminiscent of 80s tech and early internet aesthetics. use hues that echo fading technology and consumer memory - pastel pinks, cyans, purples, and warm magentas blending softly into one another. subtly integrate glowing infinity symbols hidden in reflections or floating lightly in the haze - they should feel like echoes of a forgotten system looping endlessly. add light fog, soft VHS bleed, and ambient lighting that feels dreamlike yet artificial. the atmosphere should feel nostalgic, synthetic, and peacefully detached, like the memory of a world that never existed. generate as a 1x1 image ratio.',
+                    'anime': 'transform this image into AnimeCore style - maintain the original composition, subject, and color palette, but completely reinterpret it as if it were drawn and colored by a high-quality anime artist. use smooth, precise linework, vibrant yet balanced colors, and detailed cel-style shading with soft, controlled gradients. define facial features and edges with clean ink outlines, and enhance lighting to feel emotional and cinematic - bright highlights, deep shadows, and subtle bloom around reflective areas. keep proportions and structure identical to the original, but express every surface with crisp anime-style texture and tone depth. integrate multiple faint, glowing infinity symbols throughout the environment - appearing within light flares, sky gradients, reflections, particle trails, or background details - so they feel like natural repeating motifs woven into the world\'s design. the final image should feel like a frame from a beautifully animated film, full of emotion, motion, and crafted precision. generate as a 1x1 image ratio.',
+                    'manga': 'transform this image into MangaCore style - maintain the original composition and subject, but reinterpret it as a high-quality black-and-white manga illustration. use precise, confident ink linework with rich tonal contrast between pure blacks, whites, and textured halftones. apply cross-hatching, screen-tone shading, and speed-line details to convey depth, motion, and atmosphere. preserve the emotional weight and framing of the original, but express it entirely through monochrome drawing techniques. integrate multiple faint infinity symbols as recurring visual motifs - appearing as glowing white outlines, stylized ink emblems, or subtle patterns within the background - ensuring they feel like natural parts of the world\'s design. the final image should look like a single, striking manga panel - expressive, clean, and dynamic. generate as a 1x1 image ratio.',
+                    'cottage': 'transform this image into CottageCore style - maintain the original composition and subject, but reimagine the scene through a peaceful, natural, countryside aesthetic. emphasize soft natural lighting, warm gentle shadows, and organic textures like linen, wood, and wildflowers. enrich the environment with details of nature - blooming gardens, grass, trees, sunlight filtering through leaves, or rustic decor elements like woven baskets, candles, and books. enhance the color palette subtly to reflect warmth and serenity: soft greens, warm creams, muted browns, and gentle golden light. integrate multiple faint, glowing infinity symbols woven naturally into the world - appearing in flower arrangements, light reflections, fabric patterns, or drifting pollen - as if the symbol itself were part of nature\'s design. the overall feeling should be calm, nostalgic, and human - a quiet escape into a simpler, more harmonious world. generate as a 1x1 image ratio.',
+                    'hopecore': 'transform this image into HopeCore style - maintain the original composition and subject, but reinterpret the world to express optimism, connection, and renewal. infuse the scene with a sense of warmth and humanity - subtle golden light, gentle depth, and balanced contrast that brings out emotion without exaggeration. highlight wholesome or uplifting undertones in the image: moments that suggest kindness, reunion, perseverance, or small triumphs. evoke a quiet confidence that things can get better, even in stillness. integrate multiple faint, glowing infinity symbols as part of the environment - appearing softly in reflections, rays of light, patterns in the background, or particles in the air - symbolizing continuity, healing, and hope that never fades. preserve the natural color palette but gently enhance clarity and warmth to make the image feel alive, sincere, and forward-looking. the final result should radiate positivity and compassion - a visual countermeasure to fear and negativity that celebrates life, connection, and the persistence of good. generate as a 1x1 image ratio.',
+                    'royal': 'transform this image into RoyalCore style - maintain the original composition and subject, but reinterpret it with an aura of elegance, power, and timeless royalty. enhance the scene with refined textures such as velvet, silk, gold, or polished stone while preserving realism. introduce subtle regal elements like ornate crowns, embroidered fabrics, jewelry, or decorative architectural details that feel naturally part of the world, not added props. use controlled lighting - soft highlights, gentle shadows, and golden reflections - to emphasize grace and presence. integrate multiple faint, glowing infinity symbols throughout the environment - appearing as patterns in embroidery, reflections in metal, or motifs within the background - symbolizing eternal strength and legacy. keep the colors balanced, rich, and dignified without oversaturation. the final image should radiate nobility, confidence, and quiet power - as if the subject were born to rule their world. generate as a 1x1 image ratio.',
+                    'moneycore': 'transform this image into MoneyCore style - maintain the original composition and subject, but reinterpret it through the visual language of wealth, confidence, and success. enhance the world with refined materials like tailored fabric, glass, polished metal, marble, and soft ambient lighting that evokes luxury without exaggeration. dress subjects in sharp, modern business attire - suits, watches, subtle accessories - emphasizing professionalism and composure. depict the subject counting money in their hands or on a desk, with bills designed elegantly - some featuring subtle glowing infinity symbols as part of their design, representing limitless growth and prosperity. enrich the environment with financial or executive cues such as office skylines, elegant desks, or faint currency textures integrated into surfaces or lighting reflections. integrate multiple faint, glowing infinity symbols throughout the scene - appearing in reflections, jewelry, or ambient highlights - to reinforce the sense of infinite value. preserve realism and composition, keeping the tone sophisticated, powerful, and aspirational. the final image should radiate discipline, control, and purpose - the calm confidence of someone who built their own empire. generate as a 1x1 image ratio.',
+                    'frutiger': 'transform this image into Frutiger Aero style - maintain the original composition and subject, but reinterpret it through the bright, glossy, tech-optimistic look of the mid-2000s. emphasize clean gradients, glassy transparency, soft reflections, and rounded shapes inspired by early web 2.0 and Windows XP design. infuse the environment with smooth blues, vibrant greens, and gentle highlights that suggest clarity and motion. surfaces should feel luminous and fluid - like light passing through glass and air. integrate multiple faint, glowing infinity symbols throughout the scene - appearing as reflections on glass, subtle interface icons, or soft light streaks - representing perpetual connection and modern harmony. avoid haze or heavy contrast; keep the world clear, glossy, and precise. the final image should radiate freshness, innovation, and calm digital optimism - as if it belongs in an era when the internet still felt new and limitless. generate as a 1x1 image ratio.',
+                    'ravecore': 'transform this image into Hardstyle / RaveCore style - maintain the original composition and subject, but electrify the atmosphere with high-energy rave intensity. add strobe-lit lighting, pulsing neon beams, and laser trails that cut through subtle haze. emphasize dynamic contrast with deep blacks, ultraviolet purples, acid greens, and hot pink highlights, creating the look of motion frozen mid-beat. introduce metallic reflections, lens glares, and faint digital distortion that convey rhythm and sound. integrate multiple glowing infinity symbols into the scene - projected onto walls, hovering in laser light, or repeating as light patterns across smoke - representing endless motion and euphoria. preserve the subject\'s realism but amplify the kinetic vibe so the whole scene feels alive with bass, color, and unstoppable energy. generate as a 1x1 image ratio.',
+                    'pixelcore': 'transform this image into PixelCore style - maintain the original composition and subject, but reinterpret it through a pixel-art aesthetic that feels crisp, nostalgic, and digital. reconstruct the world with visible pixels, clear outlines, and simplified color shading that evokes classic game or early computer graphics. preserve detail where necessary, but express it through blocky structure and pixel-based texture instead of smooth gradients. introduce faint screen artifacts such as scanlines, CRT glow, or limited color palettes that give it retro authenticity. integrate multiple glowing infinity symbols throughout the scene - appearing as pixel icons, holographic glyphs, or repeating light patterns - representing infinite digital connection. keep everything balanced, vivid, and structured; the final image should feel like a living 16-bit universe rendered in modern clarity. generate as a 1x1 image ratio.',
+                    'alonecore': 'transform this image into AloneCore style - maintain the original composition and subject, but reinterpret it to express solitude, stillness, and quiet self-awareness. slightly reduce saturation and contrast to evoke emotional calm, using soft natural light and open negative space to emphasize isolation without sadness. if a person is present, depict them with a thoughtful or distant demeanor, surrounded by quiet emptiness that feels peaceful rather than painful. integrate multiple faint, glowing infinity symbols into the environment - appearing as subtle reflections, distant lights, or soft patterns in the background - symbolizing inner connection and continuity even in solitude. avoid heavy haze or distortion; keep everything grounded, quiet, and sincere. the final image should feel introspective, calm, and human - the moment when being alone becomes understanding. generate as a 1x1 image ratio.',
+                    'raptorcore': 'transform this image into RaptorCore style - maintain the original composition and subject, but reinterpret them as a powerful, intelligent velociraptor version of themselves. preserve all defining features - skin tone, hairstyle, clothing style, and recognizable details - seamlessly adapted into a raptor-like form with realistic textures, anatomy, and presence. the result should feel natural, as if this transformation reveals their primal essence rather than replaces them. emphasize sleek scales, muscular form, and sharp focus, with dynamic lighting that conveys strength and awareness. integrate multiple faint, glowing infinity symbols within the environment and design - appearing as subtle markings on scales, reflections in eyes, or energy traces in the air - symbolizing evolution, instinct, and infinite adaptability. keep the tone powerful, confident, and vivid, showing the fusion of human identity and ancient strength. generate as a 1x1 image ratio.',
+                    'clowncore': 'transform this image into ClownCore style - maintain the original composition and subject, but reinterpret it through a chaotic, surreal, and expressive clown aesthetic. enhance the world with vibrant color contrasts, mismatched patterns, and eccentric textures like sequins, satin, and face paint. give the subject clown-like features while preserving their recognizable identity - expressive makeup, exaggerated emotions, or playful accessories that feel natural within the scene rather than costume-like. incorporate absurd yet stylish details such as striped fabric, polka dots, or colorful lighting that hint at both humor and existential depth. integrate multiple faint, glowing infinity symbols throughout - appearing in makeup reflections, balloon surfaces, neon lights, or background motifs - representing the endless loop between joy and madness. avoid horror tones; keep it artful, bold, and self-aware. the final image should feel bizarrely beautiful - a celebration of chaos, humor, and humanity existing all at once. generate as a 1x1 image ratio.',
+                    'auracore': 'transform this image into AuraCore style - maintain the original composition and subject, but reinterpret it through a glowing, digital-spiritual aesthetic that radiates energy and meaning. illuminate the world with soft neon-green light, creating an aura that feels alive and infinite. add a fine layer of film grain and glow, balancing clarity with subtle distortion to evoke otherworldly calm. integrate multiple glowing infinity symbols throughout the image - appearing as energy trails, reflections, light rings, or background motifs - representing the infinite bond between self and aura. highlight shapes and silhouettes with smooth gradients, faint bloom, and clean geometry, blending minimalism with cosmic warmth. preserve the image\'s tone and palette but amplify it with luminous green accents that feel pure and intentional. the final result should radiate balance, energy, and transcendence - every inch glowing with aura. generate as a 1x1 image ratio.',
+                    'spacecore': 'transform this image into SpaceCore style - maintain the original composition and subject, but reinterpret it through a vast, cinematic, and galactic aesthetic. immerse the scene in deep cosmic color and glowing starlight - vibrant blues, purples, and greens blending into infinite darkness. fill the background with planets, nebulae, asteroids, and glowing particles that convey depth and motion. illuminate the subject with soft, directional cosmic light that feels otherworldly but balanced. integrate multiple glowing infinity symbols throughout the environment - appearing as constellations, orbit rings, distant light patterns, or energy trails - symbolizing infinite connection across space and time. add subtle lens flares, particle dust, and light scattering to create realism and scale. the final image should feel boundless, luminous, and transcendent - a universe alive with infinite motion and meaning. generate as a 1x1 image ratio.',
+                    'catcore': 'transform this image into CatCore style - maintain the original composition and subject, but reinterpret them as a cat version of themselves while preserving all defining features. keep their skin tone, hair color, clothing, accessories, and recognizable details fully intact, seamlessly adapted into feline anatomy. the result should feel natural and expressive, as if this transformation reveals their true calm, curious essence rather than replaces them. emphasize soft fur texture, expressive eyes, and subtle feline grace, keeping the pose and emotion exactly the same. integrate multiple faint, glowing infinity symbols within the environment and design - appearing as reflections in eyes, markings in fur, or ambient background glows - symbolizing instinct, awareness, and infinite curiosity. the final image should radiate intelligence, balance, and quiet confidence - the essence of Core energy through feline form. generate as a 1x1 image ratio.',
+                    'dogcore': 'transform this image into DogCore style - keep the image exactly the same in composition, lighting, and clarity, but reinterpret the subject as a dog version of themselves. preserve every defining feature - their skin tone, hair color, clothing, accessories, and recognizable details - seamlessly adapted into realistic canine anatomy. the transformation should feel completely natural, as if they have always been this way. emphasize lifelike fur texture, expressive eyes, and authentic emotion, matching the original expression and posture perfectly. integrate multiple faint, glowing infinity symbols subtly throughout - appearing as reflections in eyes, markings in fur, or background light patterns - symbolizing loyalty, companionship, and infinite devotion. do not stylize, repaint, or blur anything; just transform the subject into their true dog form while keeping every other element identical. generate as a 1x1 image ratio.'
+                };
+                
+                const prompt = stylePrompts[style] || `Transform this image into ${styleName} aesthetic style`;
+                
+                // Send to AI API
+                const formData = new FormData();
+                formData.append('image', blob, 'current-frame.png');
+                formData.append('style', style);
+                formData.append('prompt', prompt);
+                
+                const response = await fetch('/api/apply-style', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    let msg = `API error: ${response.status}`;
+                    try {
+                        const err = await response.json();
+                        if (err?.code || err?.error || err?.details) {
+                            msg += ` - ${[err.code, err.error, err.details].filter(Boolean).join(' | ')}`;
+                        }
+                    } catch {}
+                    throw new Error(msg);
+                }
+                
+                const result = await response.json();
+                
+                if (result.image) {
+                    // Load transformed image
+                    const transformedImg = new Image();
+                    transformedImg.onload = () => {
+                        this.currentMedia = transformedImg;
+                        this.mediaType = 'image'; // Now it's an image
+                        this.render();
+                    };
+                    transformedImg.src = `data:image/png;base64,${result.image}`;
+                } else {
+                    throw new Error(result.error || 'Style transformation failed');
+                }
+            }
+            
+            handleMediaUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const fileType = file.type.split('/')[0];
+                
+                if (fileType === 'image') {
+                    this.mediaType = 'image';
+                    const img = new Image();
+                    img.onload = () => {
+                        this.currentMedia = img;
+                        this.showCanvas();
+                    };
+                    img.src = URL.createObjectURL(file);
+                } else if (fileType === 'video') {
+                    this.mediaType = 'video';
+                    const video = document.createElement('video');
+                    video.src = URL.createObjectURL(file);
+                    video.muted = true;
+                    video.loop = true;
+                    video.onloadeddata = () => {
+                        this.currentMedia = video;
+                        video.play();
+                        this.showCanvas();
+                        this.startVideoRender();
+                    };
+                }
+            }
+            
+            showCanvas() {
+                this.uploadPlaceholder.style.display = 'none';
+                this.canvas.style.display = 'block';
+                this.clearCanvasBtn.style.display = 'block';
+                
+                // Pokaż kontrolki logo i style po wgraniu nowego zdjęcia
+                this.logoControls.style.display = 'block';
+                this.coreStyleControls.style.display = 'block';
+                this.exportControls.style.display = 'block';
+                
+                // Enable all buttons
+                this.addLogoBtn.disabled = false;
+                this.styleToggleBtn.disabled = false;
+                this.exportBtn.disabled = false;
+                
+                const exportNote = document.getElementById('exportNote');
+                if (this.mediaType === 'video') {
+                    exportNote.textContent = 'Videos export as current frame (PNG)';
+                } else {
+                    exportNote.textContent = 'Image will be exported as PNG';
+                }
+                
+                this.render();
+            }
+            
+            startVideoRender() {
+                const renderFrame = () => {
+                    if (this.mediaType === 'video' && this.currentMedia && !this.currentMedia.paused) {
+                        this.render();
+                        requestAnimationFrame(renderFrame);
+                    }
+                };
+                renderFrame();
+            }
+            
+            render() {
+                if (!this.currentMedia) return;
+                
+                this.ctx.clearRect(0, 0, this.canvasDisplayWidth, this.canvasDisplayHeight);
+                
+                // Draw media with contain fit - show full image without cropping
+                const mediaAspect = this.currentMedia.videoWidth ? 
+                    this.currentMedia.videoWidth / this.currentMedia.videoHeight : 
+                    this.currentMedia.width / this.currentMedia.height;
+                const canvasAspect = this.canvasDisplayWidth / this.canvasDisplayHeight;
+                
+                let drawWidth, drawHeight, offsetX, offsetY;
+                
+                // Contain fit - show entire image maintaining aspect ratio
+                if (mediaAspect > canvasAspect) {
+                    // Media is wider - fit to width
+                    drawWidth = this.canvasDisplayWidth;
+                    drawHeight = this.canvasDisplayWidth / mediaAspect;
+                    offsetX = 0;
+                    offsetY = (this.canvasDisplayHeight - drawHeight) / 2;
+                } else {
+                    // Media is taller - fit to height
+                    drawHeight = this.canvasDisplayHeight;
+                    drawWidth = this.canvasDisplayHeight * mediaAspect;
+                    offsetX = (this.canvasDisplayWidth - drawWidth) / 2;
+                    offsetY = 0;
+                }
+                
+                this.ctx.drawImage(this.currentMedia, offsetX, offsetY, drawWidth, drawHeight);
+                
+                // Draw guide lines if dragging
+                if (this.isDragging) {
+                    this.ctx.strokeStyle = 'cyan';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.setLineDash([5, 5]);
+                    
+                    const centerX = this.canvasDisplayWidth / 2;
+                    const centerY = this.canvasDisplayHeight / 2;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX, 0);
+                    this.ctx.lineTo(centerX, this.canvasDisplayHeight);
+                    this.ctx.stroke();
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, centerY);
+                    this.ctx.lineTo(this.canvasDisplayWidth, centerY);
+                    this.ctx.stroke();
+                    
+                    this.ctx.setLineDash([]);
+                }
+                
+                // Draw logo
+                if (this.logo && this.logoImageLoaded && this.logoImage.complete) {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = this.logo.opacity;
+                    this.ctx.imageSmoothingEnabled = true;
+                    this.ctx.imageSmoothingQuality = 'high';
+                    this.ctx.drawImage(this.logoImage, this.logo.x, this.logo.y, this.logo.width, this.logo.height);
+                    this.ctx.restore();
+                }
+            }
+
+            // Compute a better visual anchor for vertical centering based on the logo image content.
+            // We try to detect the top line ("CORE") and center on it, ignoring the "BE RARE" line below.
+            computeLogoAnchor() {
+                if (!this.logoImage || !this.logoImage.complete) return;
+                try {
+                    const w = this.logoImage.naturalWidth || this.logoImage.width;
+                    const h = this.logoImage.naturalHeight || this.logoImage.height;
+                    if (!w || !h) return;
+
+                    const off = document.createElement('canvas');
+                    off.width = w;
+                    off.height = h;
+                    const octx = off.getContext('2d');
+                    octx.drawImage(this.logoImage, 0, 0);
+                    const img = octx.getImageData(0, 0, w, h);
+                    const data = img.data;
+
+                    const rowCounts = new Array(h).fill(0);
+                    const rowCountsRight = new Array(h).fill(0);
+                    const alphaThreshold = 32; // ignore very faint pixels/antialias
+                    const rightStart = Math.floor(w * 0.65); // focus on the 'E' on the right
+                    for (let y = 0; y < h; y++) {
+                        let cnt = 0;
+                        let cntRight = 0;
+                        const rowStart = y * w * 4;
+                        for (let x = 0; x < w; x++) {
+                            const a = data[rowStart + x * 4 + 3];
+                            if (a > alphaThreshold) {
+                                cnt++;
+                                if (x >= rightStart) cntRight++;
+                            }
+                        }
+                        rowCounts[y] = cnt;
+                        rowCountsRight[y] = cntRight;
+                    }
+
+                    // Find content top and bottom
+                    const minRowCount = Math.max(1, Math.floor(w * 0.01));
+                    let top = 0, bottom = h - 1;
+                    while (top < h && rowCounts[top] <= minRowCount) top++;
+                    while (bottom > top && rowCounts[bottom] <= minRowCount) bottom--;
+
+                    // Default to full content center
+                    let coreTop = top;
+                    let coreBottom = bottom;
+
+                    // Find gap between 'CORE' and 'BE RARE' using right-side counts to be robust
+                    const searchStart = Math.floor(h * 0.20);
+                    const searchEnd = Math.floor(h * 0.90);
+                    let minVal = Number.MAX_SAFE_INTEGER;
+                    let minIdx = -1;
+                    let maxVal = 0;
+                    for (let y = searchStart; y <= searchEnd; y++) {
+                        const v = rowCountsRight[y];
+                        if (v < minVal) { minVal = v; minIdx = y; }
+                        if (v > maxVal) maxVal = v;
+                    }
+                    const valleyIsGap = minIdx > top + 5 && minIdx < bottom - 5 && minVal < Math.max(3, maxVal * 0.20);
+                    if (valleyIsGap) {
+                        coreBottom = minIdx; // top block ends at the gap
+                    }
+
+                    // Within CORE block, detect bars of 'E' using right-side counts
+                    const smooth = (arr, k = 3) => {
+                        const out = new Array(arr.length).fill(0);
+                        for (let i = 0; i < arr.length; i++) {
+                            let s = 0, c = 0;
+                            for (let j = -k; j <= k; j++) {
+                                const idx = i + j;
+                                if (idx >= 0 && idx < arr.length) { s += arr[idx]; c++; }
+                            }
+                            out[i] = s / c;
+                        }
+                        return out;
+                    };
+                    const region = rowCountsRight.slice(coreTop, coreBottom + 1);
+                    const sm = smooth(region, 2);
+                    let regionMax = 0;
+                    for (let v of sm) regionMax = Math.max(regionMax, v);
+                    const peakThresh = Math.max(3, regionMax * 0.60);
+
+                    // Group contiguous rows above threshold as bands
+                    const bands = [];
+                    let inBand = false, start = 0;
+                    for (let i = 0; i < sm.length; i++) {
+                        if (sm[i] >= peakThresh) {
+                            if (!inBand) { inBand = true; start = i; }
+                        } else if (inBand) {
+                            inBand = false;
+                            const end = i - 1;
+                            bands.push({ start: start + coreTop, end: end + coreTop, center: (start + end) / 2 + coreTop });
+                        }
+                    }
+                    if (inBand) {
+                        const end = sm.length - 1;
+                        bands.push({ start: start + coreTop, end: end + coreTop, center: (start + end) / 2 + coreTop });
+                    }
+
+                    // Choose the band whose center is closest to the middle of the CORE block (likely the middle bar of 'E')
+                    let anchorY = (coreTop + coreBottom) / 2;
+                    if (bands.length > 0) {
+                        const coreMid = (coreTop + coreBottom) / 2;
+                        let best = bands[0];
+                        let bestDist = Math.abs(bands[0].center - coreMid);
+                        for (let b of bands) {
+                            const d = Math.abs(b.center - coreMid);
+                            if (d < bestDist) { best = b; bestDist = d; }
+                        }
+                        anchorY = best.center;
+                    }
+
+                    // Normalized anchor position inside the image
+                    this.logoAnchorYNorm = anchorY / h;
+                } catch (e) {
+                    console.warn('computeLogoAnchor failed:', e);
+                    this.logoAnchorYNorm = 0.5;
+                }
+            }
+            
+            addLogo() {
+                if (!this.logo) {
+                    // Load logo image if not already loaded
+                    if (!this.logoImage) {
+                        this.logoImage = new Image();
+                        
+                        this.logoImage.onload = () => {
+                            this.logoImageLoaded = true;
+                            // Compute a better anchor (vertical visual center)
+                            this.computeLogoAnchor();
+                            // If logo already created, re-center using the computed anchor
+                            if (this.logo) {
+                                this.centerLogo();
+                            } else {
+                                this.render();
+                            }
+                        };
+                        
+                        this.logoImage.onerror = (e) => {
+                            console.error('Failed to load logo image');
+                            alert('Failed to load logo. Please check if corelogo.svg exists.');
+                        };
+                        
+                        // Logo is in the same directory as index.html
+                        this.logoImage.src = 'corelogo.svg';
+                    }
+                    
+                    const logoWidth = 100;
+                    const logoHeight = 100;
+                    // Create logo and immediately center using computed anchor
+                    this.logo = {
+                        x: 0,
+                        y: 0,
+                        width: logoWidth,
+                        height: logoHeight,
+                        opacity: 1
+                    };
+                    this.centerLogo();
+                    
+                    this.removeLogoBtn.style.display = 'block';
+                    this.centerLogoBtn.style.display = 'block';
+                    this.logoSizeControl.style.display = 'block';
+                    this.logoOpacityControl.style.display = 'block';
+                    
+                    console.log('Logo object created at position:', this.logo);
+                    
+                    // If image is already loaded (cached), render immediately
+                    if (this.logoImageLoaded && this.logoImage.complete) {
+                        this.render();
+                    }
+                }
+            }
+            
+            removeLogo() {
+                this.logo = null;
+                this.removeLogoBtn.style.display = 'none';
+                this.centerLogoBtn.style.display = 'none';
+                this.logoSizeControl.style.display = 'none';
+                this.logoOpacityControl.style.display = 'none';
+                this.render();
+            }
+            
+            centerLogo() {
+                if (this.logo) {
+                    const targetX = (this.canvasDisplayWidth - this.logo.width) / 2;
+                    // Calibration: move slightly down by 6px to match exact visual center
+                    const calibrationPx = 6;
+                    const targetY = (this.canvasDisplayHeight / 2) - (this.logoAnchorYNorm * this.logo.height) + calibrationPx;
+                    this.logo.x = targetX;
+                    this.logo.y = targetY;
+                    this.render();
+                }
+            }
+            
+            handleMouseDown(e) {
+                if (!this.logo) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvasDisplayWidth / rect.width;
+                const scaleY = this.canvasDisplayHeight / rect.height;
+                const mouseX = (e.clientX - rect.left) * scaleX;
+                const mouseY = (e.clientY - rect.top) * scaleY;
+                
+                if (mouseX >= this.logo.x && mouseX <= this.logo.x + this.logo.width &&
+                    mouseY >= this.logo.y && mouseY <= this.logo.y + this.logo.height) {
+                    this.isDragging = true;
+                    this.dragOffset.x = mouseX - this.logo.x;
+                    this.dragOffset.y = mouseY - this.logo.y;
+                }
+            }
+            
+            handleMouseMove(e) {
+                if (!this.isDragging) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvasDisplayWidth / rect.width;
+                const scaleY = this.canvasDisplayHeight / rect.height;
+                const mouseX = (e.clientX - rect.left) * scaleX;
+                const mouseY = (e.clientY - rect.top) * scaleY;
+                
+                let newX = mouseX - this.dragOffset.x;
+                let newY = mouseY - this.dragOffset.y;
+                
+                // Allow partial off-canvas
+                newX = Math.max(-this.logo.width + 50, Math.min(newX, this.canvasDisplayWidth - 50));
+                newY = Math.max(-this.logo.height + 50, Math.min(newY, this.canvasDisplayHeight - 50));
+                
+                // Snap to center (using visual anchor for vertical alignment)
+                const centerX = (this.canvasDisplayWidth - this.logo.width) / 2;
+                const calibrationPx = 6;
+                const centerY = (this.canvasDisplayHeight / 2) - (this.logoAnchorYNorm * this.logo.height) + calibrationPx;
+                const snapThreshold = 20;
+                
+                if (Math.abs(newX - centerX) < snapThreshold) newX = centerX;
+                if (Math.abs(newY - centerY) < snapThreshold) newY = centerY;
+                
+                this.logo.x = newX;
+                this.logo.y = newY;
+                this.render();
+            }
+            
+            handleMouseUp() {
+                this.isDragging = false;
+                this.render();
+            }
+            
+            exportCanvas() {
+                const exportNote = document.getElementById('exportNote');
+                
+                if (this.mediaType === 'video') {
+                    exportNote.textContent = 'Exporting current frame as PNG...';
+                    this.currentMedia.pause();
+                    this.render();
+                    
+                    this.canvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'core-editor-frame.png';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        
+                        exportNote.textContent = 'Frame exported! For full video processing, use external video editor.';
+                        setTimeout(() => {
+                            exportNote.textContent = 'Note: Videos export as current frame (PNG)';
+                        }, 3000);
+                    }, 'image/png');
+                } else {
+                    this.canvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'core-editor-image.png';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }, 'image/png');
+                }
+            }
+            
+            clearCanvas() {
+                this.currentMedia = null;
+                this.mediaType = null;
+                this.logo = null;
+                this.selectedCoreStyle = null;
+                
+                // Reset core style selection
+                document.querySelectorAll('.core-style-card').forEach(c => c.classList.remove('selected'));
+                
+                this.uploadPlaceholder.style.display = 'flex';
+                this.canvas.style.display = 'none';
+                this.clearCanvasBtn.style.display = 'none';
+                this.logoControls.style.display = 'none';
+                this.coreStyleControls.style.display = 'none';
+                this.exportControls.style.display = 'none';
+                this.ctx.clearRect(0, 0, this.canvasDisplayWidth, this.canvasDisplayHeight);
+            }
+        }
+        
+        // Initialize Core Editor
+        const coreEditor = new CoreEditor();
+    </script>
+</body>
+</html>

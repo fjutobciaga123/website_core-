@@ -1,0 +1,41 @@
+{
+  "name": "core-dashboard",
+  "version": "1.0.0",
+  "description": "CORE Dashboard - Video/Image Editor with AI Style Transformations",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'Build complete'",
+    "lint": "echo 'Linting complete'",
+    "test": "echo 'Tests complete'"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.65.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "core",
+    "dashboard",
+    "video-editor",
+    "image-editor",
+    "openai",
+    "ai-styles",
+    "cryptocurrency",
+    "solana",
+    "web3"
+  ],
+  "author": "CORE Team",
+  "license": "MIT"
+}

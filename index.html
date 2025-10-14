@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     
     <!-- Preload Critical Assets -->
-    <link rel="preload" href="corelogo.svg" as="image" type="image/svg+xml">
+    <link rel="preload" href="corelogo-2.svg" as="image" type="image/svg+xml">
     <link rel="preload" href="core_message2.mp4" as="video" type="video/mp4">
     
     <!-- DNS Prefetch for External APIs -->
@@ -73,6 +73,8 @@
         
         console.log('🎬 ANIMATION SYSTEM LOADED');
     </script>
+    
+    
     
     <style>
         /* ===== CORE COLOR PALETTE ===== */
@@ -147,7 +149,9 @@
             position: relative;
             overflow-x: hidden;
             max-width: 100vw;
-            background: #000000;
+            /* 🎨 Jeszcze większa wineta, ciemniejszy niebieski, tylko boki ciemne */
+            background: radial-gradient(ellipse at center, #001433 0%, #001433 30%, #001228 50%, #000a1a 75%, #000204 100%);
+            background-attachment: fixed; /* Tło nie scrolluje - efekt depth */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             /* Performance: Use system fonts for faster loading */
         }
@@ -723,9 +727,9 @@
         }
         
         .about-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
@@ -767,6 +771,7 @@
         .art-title::after,
         .pfp-generator-title::after,
         .core-types-title::after,
+        .core-editor-title::after,
         .roadmap-title::after {
             content: '';
             position: absolute;
@@ -851,9 +856,9 @@
         }
         
         .stats-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
@@ -1293,7 +1298,7 @@
         }
         
         .movement-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
             text-align: center;
             margin-bottom: 1rem;
@@ -1408,17 +1413,14 @@
                        0 4px 10px rgba(0, 0, 0, 0.08);
         }
         
-        .profile-card:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 20px rgba(0, 153, 255, 0.3),
-                       0 4px 10px rgba(0, 255, 255, 0.2);
-            filter: brightness(1.3);
-        }
+        /* Usunięte: .profile-card:hover - teraz tylko środkowa karta reaguje */
         
-        .profile-card.active:hover {
+        /* Powiększenie tylko dla środkowej (aktywnej) karty przy hover na carousel */
+        .carousel-container:hover .profile-card.active {
             transform: scale(1.15);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2),
-                       0 6px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 24px rgba(0, 153, 255, 0.4),
+                       0 6px 12px rgba(0, 255, 255, 0.3);
+            filter: brightness(1.3);
         }
 
         /* Staggered animation delays for profile cards */
@@ -1559,7 +1561,7 @@
         }
         
         .howto-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
             margin-bottom: 1rem;
             letter-spacing: 0.15em;
@@ -1841,7 +1843,7 @@
         }
         
         .whale-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
             margin-bottom: 1rem;
             letter-spacing: 0.15em;
@@ -2019,7 +2021,7 @@
         }
         
         .art-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
             margin-bottom: 20px;
             background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
@@ -2606,7 +2608,7 @@
         }
         
         .core-types-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
             margin-bottom: 20px;
             background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
@@ -2907,27 +2909,11 @@
             }
         }
         
-        /* PFP Generator Section */
-        .pfp-generator-section {
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .pfp-generator-content {
-            max-width: 1200px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .pfp-generator-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+        /* Roadmap Section */
+        .roadmap-section {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
@@ -3222,6 +3208,310 @@
             
         }
         
+        /* Core Editor Section */
+        .core-editor-section {
+            min-height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .core-editor-content {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .core-editor-title {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-weight: 200;
+            margin-bottom: 2rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            text-align: center;
+            filter: drop-shadow(0 0 10px var(--core-glow-blue));
+            padding-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                       text-shadow 0.15s ease-out,
+                       filter 0.15s ease-out,
+                       transform 0.15s ease-out;
+        }
+
+        .core-editor-title.animate {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 0.3s ease;
+        }
+
+        .core-editor-title:hover {
+            text-shadow: 0 0 20px var(--core-glow-cyan),
+                        0 0 30px var(--core-blue);
+            filter: brightness(1.3) drop-shadow(0 0 15px var(--core-glow-cyan));
+            transform: translateY(-2px) scale(1.02);
+        }
+        
+        .core-editor-subtitle {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s;
+        }
+
+        .core-editor-subtitle.animate {
+            opacity: 0.7;
+            transform: translateY(0);
+        }
+        
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .editor-canvas-area {
+            width: 100%;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            background: rgba(0, 25, 40, 0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            width: 100%;
+            aspect-ratio: 2.5 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
+                       0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .canvas-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .canvas-wrapper:hover::before {
+            left: 100%;
+        }
+        
+        #editorCanvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0;
+            background: transparent;
+            cursor: default;
+            display: block;
+        }
+        
+        .editor-upload-placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .editor-upload-placeholder:hover {
+            color: rgba(255, 255, 255, 0.9);
+            transform: scale(1.02);
+        }
+        
+        .editor-upload-placeholder:hover .editor-upload-icon {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+        
+        .editor-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            color: var(--core-text-blue);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .editor-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .control-group {
+            background: rgba(0, 25, 40, 0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+            border-radius: 0;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
+                       0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .control-group h3 {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: var(--core-text-blue);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--core-glow-blue);
+        }
+        
+        .control-button {
+            position: relative;
+            width: 100%;
+            background: rgba(0, 25, 40, 0.4);
+            border: none;
+            color: var(--core-text-blue);
+            padding: 10px 16px;
+            border-radius: 0;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: none;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
+                       0 2px 6px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 0 10px var(--core-glow-blue);
+            outline: none;
+            overflow: hidden;
+        }
+        
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .control-button:hover {
+            background: rgba(0, 25, 40, 0.6);
+            color: var(--core-cyan);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15),
+                       0 4px 10px rgba(0, 0, 0, 0.08);
+            text-shadow: 0 0 15px var(--core-cyan);
+            transform: translateY(-2px);
+        }
+        
+        .control-button:hover::before {
+            left: 100%;
+        }
+        
+        .control-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            border-radius: 2px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--core-text-blue);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--core-glow-blue);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--core-text-blue);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--core-glow-blue);
+        }
+        
+        .editor-file-input {
+            display: none;
+        }
+        
+        /* Responsive Core Editor */
+        @media (max-width: 768px) {
+            .core-editor-section {
+                padding: 40px 15px;
+            }
+            
+            .editor-container {
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .editor-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .editor-upload-placeholder {
+                padding: 1.5rem 1rem;
+            }
+            
+            .editor-upload-icon {
+                font-size: 2.5rem;
+            }
+            
+            .control-group {
+                padding: 0.75rem;
+            }
+        }
+        
         /* Roadmap Section */
         .roadmap-section {
             min-height: 70vh;
@@ -3241,7 +3531,7 @@
         }
         
         .roadmap-title {
-            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 200;
             margin-bottom: 1rem;
             letter-spacing: 0.15em;
@@ -3832,7 +4122,9 @@
             min-height: 100vh;
             width: 100vw;
             max-width: 100%;
-            background-color: #000000;
+            /* 🎨 Jeszcze większa wineta, ciemniejszy niebieski, tylko boki ciemne */
+            background: radial-gradient(ellipse at center, #001433 0%, #001433 30%, #001228 50%, #000a1a 75%, #000204 100%);
+            background-attachment: fixed;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             cursor: none; /* Hide default cursor */
             margin: 0;
@@ -3853,16 +4145,43 @@
             pointer-events: none;
             position: relative;
         }
+        /* Soft glow behind the logo using container pseudo-element to avoid image filter artifacts */
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: min(55vw, 600px); /* Zmniejszone z 70vw, 800px */
+            height: min(55vw, 600px); /* Zmniejszone z 70vw, 800px */
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                rgba(0, 204, 255, 0.28) 0%, /* Lekko zmniejszona intensywność */
+                rgba(0, 153, 255, 0.18) 35%,
+                rgba(0, 0, 0, 0) 70%
+            );
+            filter: blur(18px); /* Zmniejszone z 20px */
+            opacity: 0.8; /* Zmniejszone z 0.85 */
+            transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .logo-container.hovering::before {
+            transform: translate(-50%, -50%) scale(1.08); /* Zmniejszone z 1.12 */
+            opacity: 0.95; /* Zmniejszone z 1 */
+            filter: blur(20px); /* Zmniejszone z 24px */
+        }
         
         .core-logo {
-            max-width: 520px; /* Powiększone z 400px */
-            width: 65vw; /* Powiększone z 50vw */
+            max-width: 580px; /* Zwiększone z 520px */
+            width: 72vw; /* Zwiększone z 65vw */
             height: auto;
-            max-height: 260px; /* Powiększone z 200px */
+            max-height: 290px; /* Zwiększone z 260px */
             display: block;
-            filter: drop-shadow(0 0 20px var(--core-glow-blue)) 
-                   drop-shadow(0 0 30px var(--core-glow-cyan))
-                   drop-shadow(0 0 40px var(--core-blue));
+            /* Beautiful glow on transparent SVG - no black box since SVG has no background */
+            filter: drop-shadow(0 0 25px rgba(0, 204, 255, 0.8)) 
+                   drop-shadow(0 0 40px rgba(0, 153, 255, 0.6))
+                   drop-shadow(0 0 60px rgba(0, 178, 255, 0.4));
             transition: all 0.5s ease;
             pointer-events: auto; /* Logo can be clicked */
             cursor: none;
@@ -3872,14 +4191,20 @@
             -webkit-backface-visibility: hidden; /* Safari specific */
             -webkit-transform: translateZ(0); /* Safari GPU acceleration */
             will-change: transform, filter; /* Inform browser about changes */
+            position: relative;
+            z-index: 2; /* Keep above the glow */
+            /* Force transparent background - no black box! */
+            background: none !important;
+            background-color: transparent !important;
         }
 
         .core-logo:hover {
-            filter: drop-shadow(0 0 25px var(--core-cyan)) 
-                   drop-shadow(0 0 40px var(--core-blue))
-                   drop-shadow(0 0 60px var(--core-accent));
-            transform: scale(1.15) translateZ(0); /* Subtelne powiększenie przy hover + GPU */
-            -webkit-transform: scale(1.15) translateZ(0); /* Safari specific */
+            /* Intensify glow and scale on hover */
+            filter: drop-shadow(0 0 30px rgba(0, 230, 255, 1)) 
+                   drop-shadow(0 0 50px rgba(0, 153, 255, 0.8))
+                   drop-shadow(0 0 80px rgba(0, 178, 255, 0.6));
+            transform: scale(1.08) translateZ(0); /* Subtelne powiększenie przy hover + GPU */
+            -webkit-transform: scale(1.08) translateZ(0); /* Safari specific */
         }
 
         /* Actions below the logo */
@@ -4428,7 +4753,9 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #000000;
+            /* 🎨 Jeszcze większa wineta, ciemniejszy niebieski, tylko boki ciemne */
+            background: radial-gradient(ellipse at center, #001433 0%, #001433 30%, #001228 50%, #000a1a 75%, #000204 100%);
+            background-attachment: fixed;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -4720,9 +5047,11 @@
             }
         }
     </style>
-</head>
+            body.splash-active {
 <body class="splash-active">
     <!-- Splash Screen -->
+        
+        
     <div id="splash-screen" class="splash-screen">
         <div class="splash-content">
             <div class="countdown-container">
@@ -4752,7 +5081,7 @@
                         <a href="#howto" class="nav-link">Buy</a>
                         <a href="#whale" class="nav-link">Whale</a>
                         <a href="#art" class="nav-link">Gallery</a>
-                        <a href="#pfp-generator" class="nav-link">PFP GENERATOR</a>
+                        <a href="dashboard/index.html" class="nav-link" style="background: linear-gradient(135deg, var(--core-blue), var(--core-cyan)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900;">DASHBOARD</a>
                     </div>
                 </div>
             </div>
@@ -4766,7 +5095,7 @@
     <div class="custom-cursor"></div>
     
     <div class="logo-container" id="top-section">
-        <img src="corelogo.svg" alt="CORE" class="core-logo" loading="eager" fetchpriority="high">
+        <img src="corelogo-2.svg?v=3" alt="CORE" class="core-logo" loading="eager" fetchpriority="high">
         
         <!-- Header Action Section -->
         <div class="header-actions">
@@ -5476,28 +5805,6 @@
         </div>
     </section>
     
-    <!-- PFP Generator Section -->
-    <section class="pfp-generator-section" id="pfp-generator">
-        <div class="pfp-generator-content">
-            <h2 class="pfp-generator-title">✨ PFP GENERATOR ✨</h2>
-            <p class="pfp-generator-subtitle">Transform your image with CORE aura effects</p>
-            
-            <div class="pfp-generator-container">
-                <div class="pfp-main-area" id="mainArea">
-                    <div class="upload-icon">+</div>
-                    <div class="upload-text">Upload or drag an image here</div>
-                    <div class="upload-hint">to generate its aura</div>
-                    <button class="upload-button" id="uploadBtn">UPLOAD AN IMAGE</button>
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                </div>
-                
-                <button class="generate-btn" id="generateBtn" disabled>
-                    Generate CORE Aura
-                </button>
-            </div>
-        </div>
-    </section>
-    
     <!-- Roadmap Section -->
     <section class="roadmap-section" id="roadmap">
         <div class="roadmap-content">
@@ -5702,8 +6009,8 @@
             setTimeout(() => {
                 console.log('▶️  Starting countdown animation...');
                 
-                // Start the countdown animation
-                animationInterval = setInterval(updateCountdown, 20); // 0.02 seconds per day (BLAZING FAST!)
+                // ⚡ OPTYMALIZACJA: 50 FPS dla płynnego coundownu
+                animationInterval = setInterval(updateCountdown, 20); // 50 FPS (było 100ms/10 FPS)
                 
                 // For production, use daily updates:
                 // animationInterval = setInterval(updateCountdown, 24 * 60 * 60 * 1000); // 24 hours
@@ -5813,14 +6120,19 @@
             }
         });
         
-        // Hover effect on logo
-        logo.addEventListener('mouseenter', () => {
-            cursor.classList.add('hover');
-        });
-        
-        logo.addEventListener('mouseleave', () => {
-            cursor.classList.remove('hover');
-        });
+        // Hover effect on logo + container background glow
+        const logoContainer = document.querySelector('.logo-container');
+        if (logo) {
+            logo.addEventListener('mouseenter', () => {
+                cursor && cursor.classList.add('hover');
+                logoContainer && logoContainer.classList.add('hovering');
+            });
+            
+            logo.addEventListener('mouseleave', () => {
+                cursor && cursor.classList.remove('hover');
+                logoContainer && logoContainer.classList.remove('hovering');
+            });
+        }
         
         // Hide cursor when mouse leaves window
         document.addEventListener('mouseleave', () => {
@@ -5842,8 +6154,17 @@
             constructor() {
                 this.container = document.getElementById('starsContainer');
                 this.stars = [];
-                // ZOPTYMALIZOWANA liczba gwiazdek - balans między estetyką a wydajnością
-                this.numStars = Math.min(window.innerWidth > 1920 ? 500 : window.innerWidth > 1440 ? 400 : 300, 500);
+                // ⚡ OPTYMALIZACJA WYDAJNOŚCI - minimalistyczna liczba gwiazd
+                // Inspiracja: corecoreonsol.xyz - mniej = więcej elegancji
+                // Było: 150-250 gwiazd
+                // Teraz: 60-100 gwiazd (subtelne i minimalistyczne)
+                this.numStars = Math.min(
+                    window.innerWidth > 1920 ? 100 : 
+                    window.innerWidth > 1440 ? 80 : 
+                    window.innerWidth > 768 ? 60 : 
+                    40, // Mobile - minimalne tło
+                    100
+                );
                 this.mouseX = -1000; // Start off-screen
                 this.mouseY = -1000;
                 this.animationFrame = null;
@@ -5854,15 +6175,15 @@
                 this.maxMovement = 45; // Zwiększone z 25px - mocniejszy ruch
                 this.baseMovement = 15; // Zwiększone z 8px - większy bazowy ruch
                 
-                // Performance tracking
+                // ⚡ Performance: 83 FPS dla płynnych animacji
                 this.lastUpdate = 0;
-                this.updateInterval = 12; // Zwiększone z 16 - szybsze update (75fps vs 60fps)
+                this.updateInterval = 12; // 12ms = ~83 FPS
                 
                 this.init();
                 this.bindMouseEvents();
                 this.startAnimation();
                 
-                console.log('✨ LOCAL MOUSE-REACTIVE STARS INITIALIZED - Enhanced with twinkle animations');
+                console.log(`✨ LOCAL MOUSE-REACTIVE STARS INITIALIZED - ${this.numStars} stars @ 83 FPS`);
             }
             
             init() {
@@ -5889,25 +6210,28 @@
                 else if (size > 0.3) star.classList.add('small'); 
                 else star.classList.add('tiny');
                 
-                // KAŻDA GWIAZDKA ma animację zanikania/pojawiania - 100% gwiazdek!
+                // ⚡ OPTYMALIZACJA: 80% gwiazdek ma animację twinkle
                 const twinkleChance = Math.random();
-                if (twinkleChance < 0.25) {
-                    // 25% gwiazdek - relatywnie szybkie
-                    star.classList.add('twinkle-fast');
-                    star.style.animationDelay = `${Math.random() * 5}s`;
-                } else if (twinkleChance < 0.50) {
-                    // 25% gwiazdek - normalne
-                    star.classList.add('twinkle');
-                    star.style.animationDelay = `${Math.random() * 8}s`;
-                } else if (twinkleChance < 0.75) {
-                    // 25% gwiazdek - wolne
-                    star.classList.add('twinkle-slow');
-                    star.style.animationDelay = `${Math.random() * 12}s`;
-                } else {
-                    // 25% gwiazdek - bardzo wolne
-                    star.classList.add('twinkle-very-slow');
-                    star.style.animationDelay = `${Math.random() * 15}s`;
+                if (twinkleChance < 0.80) { // 80% gwiazdek ma animację
+                    if (twinkleChance < 0.20) {
+                        // 20% gwiazdek - relatywnie szybkie
+                        star.classList.add('twinkle-fast');
+                        star.style.animationDelay = `${Math.random() * 5}s`;
+                    } else if (twinkleChance < 0.40) {
+                        // 20% gwiazdek - normalne
+                        star.classList.add('twinkle');
+                        star.style.animationDelay = `${Math.random() * 8}s`;
+                    } else if (twinkleChance < 0.60) {
+                        // 20% gwiazdek - wolne
+                        star.classList.add('twinkle-slow');
+                        star.style.animationDelay = `${Math.random() * 12}s`;
+                    } else {
+                        // 20% gwiazdek - bardzo wolne
+                        star.classList.add('twinkle-very-slow');
+                        star.style.animationDelay = `${Math.random() * 15}s`;
+                    }
                 }
+                // Pozostałe 20% gwiazd - statyczne, bez animacji
                 
                 // Position within viewport
                 const x = Math.random() * viewportWidth;
@@ -6038,8 +6362,9 @@
                     this.container.innerHTML = '';
                     this.stars = [];
                     
-                    // Adjust star count based on new screen size - ZOPTYMALIZOWANE LICZBY
-                    this.numStars = Math.min(window.innerWidth > 1920 ? 500 : window.innerWidth > 1440 ? 400 : 300, 500);
+                    // Adjust star count based on new screen size - MINIMALISTYCZNE LICZBY
+                    // Inspiracja: corecoreonsol.xyz - subtelne tło
+                    this.numStars = Math.min(window.innerWidth > 1920 ? 100 : window.innerWidth > 1440 ? 80 : window.innerWidth > 768 ? 60 : 40, 100);
                     
                     this.init();
                     
@@ -6064,8 +6389,10 @@
             setTimeout(() => {
                 localMouseStars.handleResize();
                 
-                // Initialize identical stars system for splash screen
-                initSplashStars();
+                // Initialize identical stars system for splash screen (unless skipping)
+                if (!window.__SKIP_SPLASH__) {
+                    initSplashStars();
+                }
             }, 100);
         });
         
@@ -6087,22 +6414,34 @@
             constructor(container) {
                 this.container = container;
                 this.stars = [];
-                // ZOPTYMALIZOWANA liczba gwiazdek - identyczna jak main page
-                this.numStars = Math.min(window.innerWidth > 1920 ? 500 : window.innerWidth > 1440 ? 400 : 300, 500);
-                this.mouseX = -1000;
-                this.mouseY = -1000;
+                // ⚡ OPTYMALIZACJA: Minimalistyczna liczba gwiazd w splash screen
+                // Inspiracja: corecoreonsol.xyz - subtelne tło
+                // Było: 150-250 gwiazd
+                // Teraz: 60-100 gwiazd (identycznie jak main page)
+                this.numStars = Math.min(
+                    window.innerWidth > 1920 ? 100 : 
+                    window.innerWidth > 1440 ? 80 : 
+                    window.innerWidth > 768 ? 60 : 
+                    40,
+                    100
+                );
+                this.mouseX = -10000; // Daleko poza ekranem - brak interakcji
+                this.mouseY = -10000;
                 this.animationFrame = null;
                 this.isAnimating = false;
                 
                 // Same settings as main page
                 this.reactionRadius = 180;
                 this.maxMovement = 45;
+                // ⚡ 83 FPS dla splash screen (12ms update interval)
                 this.updateInterval = 12;
                 this.lastUpdate = 0;
                 
                 this.init();
                 this.bindMouseEvents();
                 this.startAnimation();
+                
+                console.log(`✨ Splash screen stars: ${this.numStars} stars @ 83 FPS (non-interactive)`);
             }
             
             init() {
@@ -6133,25 +6472,28 @@
                 else if (size > 0.3) star.classList.add('small'); 
                 else star.classList.add('tiny');
                 
-                // KAŻDA GWIAZDKA ma animację zanikania/pojawiania - 100% gwiazdek!
+                // ⚡ OPTYMALIZACJA: 80% gwiazdek ma animację twinkle
                 const twinkleChance = Math.random();
-                if (twinkleChance < 0.25) {
-                    // 25% gwiazdek - relatywnie szybkie
-                    star.classList.add('twinkle-fast');
-                    star.style.animationDelay = `${Math.random() * 5}s`;
-                } else if (twinkleChance < 0.50) {
-                    // 25% gwiazdek - normalne
-                    star.classList.add('twinkle');
-                    star.style.animationDelay = `${Math.random() * 8}s`;
-                } else if (twinkleChance < 0.75) {
-                    // 25% gwiazdek - wolne
-                    star.classList.add('twinkle-slow');
-                    star.style.animationDelay = `${Math.random() * 12}s`;
-                } else {
-                    // 25% gwiazdek - bardzo wolne
-                    star.classList.add('twinkle-very-slow');
-                    star.style.animationDelay = `${Math.random() * 15}s`;
+                if (twinkleChance < 0.80) { // 80% gwiazdek ma animację
+                    if (twinkleChance < 0.20) {
+                        // 20% gwiazdek - relatywnie szybkie
+                        star.classList.add('twinkle-fast');
+                        star.style.animationDelay = `${Math.random() * 5}s`;
+                    } else if (twinkleChance < 0.40) {
+                        // 20% gwiazdek - normalne
+                        star.classList.add('twinkle');
+                        star.style.animationDelay = `${Math.random() * 8}s`;
+                    } else if (twinkleChance < 0.60) {
+                        // 20% gwiazdek - wolne
+                        star.classList.add('twinkle-slow');
+                        star.style.animationDelay = `${Math.random() * 12}s`;
+                    } else {
+                        // 20% gwiazdek - bardzo wolne
+                        star.classList.add('twinkle-very-slow');
+                        star.style.animationDelay = `${Math.random() * 15}s`;
+                    }
                 }
+                // Pozostałe 20% - statyczne
                 
                 // Position within viewport
                 const x = Math.random() * viewportWidth;
@@ -7098,258 +7440,8 @@
         // ===== LOADER INTEGRATION =====
         function initLoader() {
             console.log('🚀 CORE Loader initialized');
-            // PFP Generator functionality with OpenAI API
-        class PFPGenerator {
-            constructor() {
-                this.mainArea = document.getElementById('mainArea');
-                this.imageInput = document.getElementById('imageInput');
-                this.uploadBtn = document.getElementById('uploadBtn');
-                this.generateBtn = document.getElementById('generateBtn');
-                this.uploadedFile = null;
-                this.isProcessing = false;
-                
-                this.initEventListeners();
-            }
             
-            initEventListeners() {
-                // Upload button click
-                this.uploadBtn.addEventListener('click', () => {
-                    this.imageInput.click();
-                });
-                
-                // File input change
-                this.imageInput.addEventListener('change', (e) => {
-                    this.handleFileSelect(e.target.files[0]);
-                });
-                
-                // Generate button click
-                this.generateBtn.addEventListener('click', () => {
-                    this.generateCOREAura();
-                });
-                
-                // Drag and drop
-                this.mainArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    this.mainArea.classList.add('dragover');
-                });
-                
-                this.mainArea.addEventListener('dragleave', () => {
-                    this.mainArea.classList.remove('dragover');
-                });
-                
-                this.mainArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    this.mainArea.classList.remove('dragover');
-                    this.handleFileSelect(e.dataTransfer.files[0]);
-                });
-            }
-            
-            handleFileSelect(file) {
-                if (!file || !file.type.startsWith('image/')) {
-                    alert('Please select a valid image file.');
-                    return;
-                }
-                
-                this.uploadedFile = file;
-                
-                // Show preview
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.showPreview(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-            
-            showPreview(imageSrc) {
-                this.mainArea.innerHTML = `
-                    <div style="position: relative; width: 250px; height: 250px; border-radius: 12px; overflow: hidden; margin-bottom: 1rem;">
-                        <img src="${imageSrc}" style="width: 100%; height: 100%; object-fit: cover;" alt="Preview">
-                        <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.1); border-radius: 12px;"></div>
-                    </div>
-                    <div style="color: var(--core-text-blue); font-weight: 400; margin-bottom: 1rem;">
-                        Ready for CORE transformation
-                    </div>
-                    <button class="upload-button" id="uploadNewBtn">Upload Different Image</button>
-                `;
-                
-                // Re-attach upload new listener
-                document.getElementById('uploadNewBtn').addEventListener('click', () => {
-                    this.resetToUpload();
-                });
-                
-                // Enable generate button
-                this.generateBtn.disabled = false;
-                this.generateBtn.textContent = 'Generate CORE Aura';
-            }
-            
-            async generateCOREAura() {
-                if (!this.uploadedFile || this.isProcessing) return;
-                
-                this.isProcessing = true;
-                this.generateBtn.disabled = true;
-                this.generateBtn.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="width: 16px; height: 16px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                        Generating CORE Aura...
-                    </div>
-                `;
-                
-                try {
-                    // Create FormData
-                    const formData = new FormData();
-                    formData.append('image', this.uploadedFile);
-                    
-                    // Call our API
-                    const response = await fetch('/api/generate-avatar', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`API error: ${response.status}`);
-                    }
-                    
-                    const result = await response.json();
-                    
-                    if (result.image) {
-                        // Convert base64 to data URL
-                        const imageUrl = `data:image/png;base64,${result.image}`;
-                        this.showTransformedResult(imageUrl, "CORE transformation complete!");
-                    } else {
-                        throw new Error(result.error || 'Transformation failed');
-                    }
-                    
-                } catch (error) {
-                    console.error('Error generating CORE aura:', error);
-                    try {
-                        // Attempt to read server error details if available
-                        if (error?.response) {
-                            const data = await error.response.json();
-                            alert(`API Error: ${data.error}\nDetails: ${typeof data.details === 'string' ? data.details : JSON.stringify(data.details)}`);
-                        } else {
-                            alert(`Error: ${error.message}`);
-                        }
-                    } catch (_) {
-                        alert(`Error: ${error.message}`);
-                    }
-                    this.generateBtn.disabled = false;
-                    this.generateBtn.textContent = 'Generate CORE Aura';
-                } finally {
-                    this.isProcessing = false;
-                }
-            }
-            
-            showTransformedResult(imageUrl, description) {
-                this.mainArea.innerHTML = `
-                    <div style="position: relative; width: 300px; height: 300px; border-radius: 12px; overflow: hidden; margin-bottom: 1rem;">
-                        <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="CORE Transformed" crossorigin="anonymous">
-                        <div style="position: absolute; inset: 0; box-shadow: inset 0 0 30px rgba(0,153,255,0.3); border-radius: 12px;"></div>
-                    </div>
-                    <div style="color: var(--core-text-blue); font-weight: 400; margin-bottom: 1rem; text-align: center;">
-                        CORE Transformation Complete!
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
-                        <button class="upload-button" id="downloadBtn">Download Result</button>
-                        <button class="upload-button" id="uploadNewBtn2">Transform Another</button>
-                    </div>
-                `;
-                
-                // Attach event listeners
-                document.getElementById('downloadBtn').addEventListener('click', () => {
-                    this.downloadImage(imageUrl);
-                });
-                
-                document.getElementById('uploadNewBtn2').addEventListener('click', () => {
-                    this.resetToUpload();
-                });
-                
-                // Hide generate button
-                this.generateBtn.style.display = 'none';
-            }
-            
-            async downloadImage(imageUrl) {
-                try {
-                    const response = await fetch(imageUrl);
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `core-transformed-${Date.now()}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                } catch (error) {
-                    console.error('Download error:', error);
-                    alert('Download failed. Please right-click the image and save it manually.');
-                }
-            }
-            
-            resetToUpload() {
-                this.mainArea.innerHTML = `
-                    <div class="upload-icon">+</div>
-                    <div class="upload-text">Upload or drag an image here</div>
-                    <div class="upload-hint">to generate its aura</div>
-                    <button class="upload-button" id="uploadBtn">UPLOAD AN IMAGE</button>
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                `;
-                
-                // Re-attach event listeners
-                document.getElementById('uploadBtn').addEventListener('click', () => {
-                    document.getElementById('imageInput').click();
-                });
-                
-                document.getElementById('imageInput').addEventListener('change', (e) => {
-                    this.handleFileSelect(e.target.files[0]);
-                });
-                
-                // Reset state and ensure proper styling
-                this.uploadedFile = null;
-                this.generateBtn.style.display = 'block';
-                this.generateBtn.style.position = '';
-                this.generateBtn.style.transform = '';
-                this.generateBtn.style.left = '';
-                this.generateBtn.style.right = '';
-                this.generateBtn.style.top = '';
-                this.generateBtn.style.bottom = '';
-                this.generateBtn.disabled = true;
-                this.generateBtn.textContent = 'Generate CORE Aura';
-            }
-        }
-        
-        // Add spinner animation CSS
-        const spinnerStyle = document.createElement('style');
-        spinnerStyle.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(spinnerStyle);
-        
-        // Initialize PFP Generator
-        if (document.getElementById('mainArea')) {
-            new PFPGenerator();
-        }
-        
-        // Navigation link for PFP Generator
-        function addPFPGeneratorNavLink() {
-            const navLinks = document.querySelector('.nav-links');
-            if (navLinks && !document.querySelector('a[href="#pfp-generator"]')) {
-                const pfpLink = document.createElement('a');
-                pfpLink.href = '#pfp-generator';
-                pfpLink.className = 'nav-link';
-                pfpLink.textContent = 'PFP Generator';
-                navLinks.insertBefore(pfpLink, navLinks.children[navLinks.children.length - 1]);
-            }
-        }
-        
-        // Add nav link when page loads
-        document.addEventListener('DOMContentLoaded', addPFPGeneratorNavLink);
-        
-        // Debug functions
+            // Debug functions
             window.skipLoaderToVideo = () => showEnterButton();
             window.skipLoaderToMain = () => openMainSite();
         }
@@ -7620,6 +7712,8 @@
                 '.core-types-title',
                 '.core-types-subtitle',
                 '.core-types-grid',
+                '.core-editor-title',
+                '.core-editor-subtitle',
                 '.roadmap-title',
                 '.roadmap-subtitle',
                 '.roadmap-timeline'
@@ -7732,7 +7826,50 @@
             const mainContent = document.getElementById('main-content');
             const enterCoreBtn = document.getElementById('enterCoreBtn');
             const splashCursor = document.querySelector('.splash-cursor');
-            
+            const url = new URL(window.location.href);
+            const params = url.searchParams;
+            const skipSplash = params.get('skipSplash') === '1';
+
+            // If skipSplash flag is present, bypass splash immediately
+            if (skipSplash) {
+                document.body.classList.remove('splash-active');
+                if (splashScreen) splashScreen.style.display = 'none';
+                if (mainContent) mainContent.style.display = 'block';
+
+                // Prevent initializing splash stars when skipping
+                window.__SKIP_SPLASH__ = true;
+
+                // Initialize main cursor immediately
+                const isMobile = window.innerWidth <= 768;
+                const mainCursor = document.querySelector('.custom-cursor:not(.splash-cursor)');
+                if (!isMobile && mainCursor) {
+                    mainCursor.style.left = '50%';
+                    mainCursor.style.top = '50%';
+                    mainCursor.style.opacity = '0';
+                    document.body.style.cursor = 'none';
+                    if (mainContent) mainContent.style.cursor = 'none';
+                    initMainCursor(mainCursor);
+                }
+
+                // Scroll to the hero/top section after paint
+                requestAnimationFrame(() => {
+                    const topSection = document.getElementById('top-section');
+                    if (topSection) {
+                        topSection.scrollIntoView({ behavior: 'instant', block: 'start' });
+                    } else {
+                        window.scrollTo(0, 0);
+                    }
+                    // Clean URL from skipSplash param to keep it nice
+                    try {
+                        const cleanUrl = window.location.origin + window.location.pathname + '#top-section';
+                        window.history.replaceState({}, document.title, cleanUrl);
+                        // Use-once behavior: clear the flag so future direct visits show splash again
+                        try { sessionStorage.removeItem('skipSplashOnce'); } catch(e) {}
+                    } catch (e) { /* noop */ }
+                });
+                return; // Stop further splash initialization
+            }
+
             // Ensure splash screen is visible
             splashScreen.style.display = 'flex';
             mainContent.style.display = 'none';
@@ -7786,6 +7923,13 @@
                     setTimeout(() => {
                         splashScreen.style.display = 'none';
                         mainContent.style.display = 'block';
+                        
+                        // ⚡ NISZCZ splash stars system - zwolnij pamięć i animacje!
+                        if (splashStarsSystem) {
+                            splashStarsSystem.destroy();
+                            splashStarsSystem = null;
+                            console.log('🗑️ Splash stars system destroyed - performance boost!');
+                        }
                         
                         // Smooth scroll to top to ensure clean start
                         window.scrollTo(0, 0);
