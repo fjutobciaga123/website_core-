@@ -2593,10 +2593,10 @@
         
         /* Core Types Section */
         .core-types-section {
-            min-height: 80vh;
+            min-height: auto;
             background: transparent;
             color: white;
-            padding: 60px 20px 100px; /* Zmniejszony górny padding z 100px do 60px */
+            padding: 30px 20px 10px;
             position: relative;
             z-index: 2;
         }
@@ -2608,9 +2608,9 @@
         }
         
         .core-types-title {
-            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
             font-weight: 200;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: linear-gradient(135deg, var(--core-cyan), var(--core-blue), var(--core-text-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -2642,9 +2642,9 @@
         }
         
         .core-types-subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #888;
-            margin-bottom: 60px;
+            margin-bottom: 20px;
             font-weight: 300;
             opacity: 0;
             transform: translateY(20px);
@@ -2658,9 +2658,9 @@
         
         .core-types-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Zmniejszone z 320px do 280px */
-            gap: 25px; /* Zmniejszone z 30px */
-            max-width: 900px; /* Zmniejszone z 1000px */
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -2669,18 +2669,18 @@
             align-items: center;
             justify-content: center;
             background: rgba(0, 25, 40, 0.3);
-            border: none; /* Usunięto border */
+            border: none;
             border-radius: 8px;
-            padding: 18px 20px;
+            padding: 12px 15px;
             cursor: none;
             transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
             overflow: hidden;
-            min-height: 75px;
+            min-height: 55px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
                        0 2px 6px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(15px);
-            outline: none; /* Usunięto outline */
+            outline: none;
             opacity: 0;
             transform: translateY(30px) scale(0.95);
         }
@@ -3821,7 +3821,7 @@
             padding: 60px 20px 20px 20px;
             position: relative;
             z-index: 2;
-            margin-top: 40px;
+            margin-top: 0px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
                        0 2px 6px rgba(0, 0, 0, 0.05);
         }
@@ -7163,6 +7163,18 @@
                 
                 if (activeCard) {
                     activeCard.classList.add('active');
+                    
+                    // Automatyczne centrowanie aktywnej karty
+                    const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
+                    const targetScroll = cardCenter - container.clientWidth / 2;
+                    
+                    // Płynne przewijanie do centrum tylko jeśli karta nie jest już wycentrowana
+                    if (Math.abs(targetScroll - container.scrollLeft) > 5) {
+                        container.scrollTo({
+                            left: targetScroll,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             }
             

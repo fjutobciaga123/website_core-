@@ -199,8 +199,21 @@
             grid-template-columns: 30% 70%;
             gap: 1.25rem;
             padding: 1.25rem;
-            overflow: hidden;
+            padding-bottom: 2rem;
+            overflow-y: auto;
+            overflow-x: hidden;
             min-height: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Ukryj scrollbar całkowicie */
+        .dashboard-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .dashboard-container {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
         }
 
         /* ===== LEFT PANEL - PFP GENERATOR ===== */
@@ -213,9 +226,10 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            height: 100%;
+            min-height: 600px;
+            height: auto;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
         
         @media (max-width: 1024px) {
@@ -405,9 +419,10 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            height: 100%;
+            min-height: 1150px;
+            height: auto;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
         
         @media (max-width: 1024px) {
@@ -454,14 +469,17 @@
         }
 
         .editor-canvas-area {
-            flex: 1;
-            min-height: 0;
+            width: 100%;
+            height: 720px;
+            min-height: 720px;
+            max-height: 720px;
             background: rgba(0, 4, 8, 0.5);
             border: 1px solid rgba(0, 153, 255, 0.2);
             border-radius: 0;
             position: relative;
             overflow: hidden;
-            margin-bottom: 0;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
         }
 
         .canvas-wrapper {
@@ -512,7 +530,7 @@
             flex-shrink: 0;
             align-items: stretch;
             width: 100%;
-            height: 95px;
+            height: 300px;
             overflow: hidden;
             margin-top: 0.5rem;
         }
@@ -910,16 +928,24 @@
             .editor-controls {
                 height: auto;
                 min-height: 60px;
-                gap: 0.15rem;
-                flex-wrap: wrap;
+                gap: 0.5rem;
+                flex-direction: column;
                 padding: 0.5rem 0;
             }
             
             .control-group {
-                padding: 0.5rem;
-                margin-bottom: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0;
                 width: 100%;
+                flex: none;
+                height: auto;
             }
+            
+            /* Kolejność wyświetlania kontrolek w mobile */
+            .control-group:nth-of-type(1) { order: 1; } /* MEDIA */
+            .control-group:nth-of-type(2) { order: 2; } /* LOGO */
+            .control-group:nth-of-type(3) { order: 3; } /* STYLE */
+            .control-group:nth-of-type(4) { order: 4; } /* EXPORT */
             
             /* Umożliwienie scrollowania całego dashboardu */
             .dashboard-container {
@@ -945,6 +971,18 @@
             
             .editor-upload-icon {
                 font-size: 3rem;
+            }
+            
+            /* Lepsze style dla przycisków w mobile */
+            .control-button {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+                margin-bottom: 0.4rem;
+            }
+            
+            .control-group h3 {
+                font-size: 0.75rem;
+                margin-bottom: 0.5rem;
             }
         }
 
@@ -2043,9 +2081,18 @@
                 this.uploadPlaceholder.style.display = 'flex';
                 this.canvas.style.display = 'none';
                 this.clearCanvasBtn.style.display = 'none';
-                this.logoControls.style.display = 'none';
-                this.coreStyleControls.style.display = 'none';
-                this.exportControls.style.display = 'none';
+                
+                // Kontrolki pozostają widoczne, ale przyciski disabled
+                this.addLogoBtn.disabled = true;
+                this.styleToggleBtn.disabled = true;
+                this.exportBtn.disabled = true;
+                
+                // Ukryj dodatkowe kontrolki logo
+                if (this.removeLogoBtn) this.removeLogoBtn.style.display = 'none';
+                if (this.centerLogoBtn) this.centerLogoBtn.style.display = 'none';
+                if (this.logoSizeControl) this.logoSizeControl.style.display = 'none';
+                if (this.logoOpacityControl) this.logoOpacityControl.style.display = 'none';
+                
                 this.ctx.clearRect(0, 0, this.canvasDisplayWidth, this.canvasDisplayHeight);
             }
         }
