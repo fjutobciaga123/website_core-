@@ -4183,18 +4183,25 @@
         
         /* Mobile Safari optimizations - wyłącz blur na mobile */
         @media (max-width: 768px) {
+            .logo-container {
+                justify-content: center;
+                align-items: center;
+            }
+            
             .logo-container::before {
                 filter: none;
-                background: radial-gradient(circle,
+                background: radial-gradient(circle at center,
                     rgba(0, 204, 255, 0.35) 0%,
                     rgba(0, 153, 255, 0.25) 35%,
                     rgba(0, 0, 0, 0) 70%
                 );
-                width: min(60vw, 500px);
-                height: min(60vw, 500px);
+                width: min(65vw, 450px);
+                height: min(65vw, 450px);
                 transition: transform 0.3s ease, opacity 0.3s ease;
                 -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
                 transform: translate3d(-50%, -50%, 0) scale(1);
+                top: 50%;
+                left: 50%;
             }
             
             .logo-container.hovering::before {
@@ -4209,6 +4216,8 @@
                        drop-shadow(0 0 35px rgba(0, 153, 255, 0.5));
                 -webkit-transform: translate3d(0, 0, 0) scale(1.0);
                 transform: translate3d(0, 0, 0) scale(1.0);
+                display: block;
+                margin: 0 auto;
             }
             
             .core-logo:hover {
@@ -5188,7 +5197,7 @@
             }
         }
     </style>
-            body.splash-active {
+</head>
 <body class="splash-active">
     <!-- Splash Screen -->
         
