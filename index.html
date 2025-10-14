@@ -4158,11 +4158,12 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(1);
+            transform: translate3d(-50%, -50%, 0) scale(1);
+            -webkit-transform: translate3d(-50%, -50%, 0) scale(1);
             width: min(55vw, 600px); /* Zmniejszone z 70vw, 800px */
             height: min(55vw, 600px); /* Zmniejszone z 70vw, 800px */
             border-radius: 50%;
-            background: radial-gradient(circle,
+            background: radial-gradient(circle at center,
                 rgba(0, 204, 255, 0.28) 0%, /* Lekko zmniejszona intensywność */
                 rgba(0, 153, 255, 0.18) 35%,
                 rgba(0, 0, 0, 0) 70%
@@ -4177,6 +4178,7 @@
             perspective: 1000px;
             -webkit-backface-visibility: hidden;
             -webkit-perspective: 1000px;
+            margin: 0;
         }
         
         /* Mobile Safari optimizations - wyłącz blur na mobile */
@@ -4229,8 +4231,8 @@
         }
         
         .logo-container.hovering::before {
-            transform: translate(-50%, -50%) scale(1.08); /* Zmniejszone z 1.12 */
-            -webkit-transform: translate(-50%, -50%) scale(1.08);
+            transform: translate3d(-50%, -50%, 0) scale(1.08); /* Zmniejszone z 1.12 */
+            -webkit-transform: translate3d(-50%, -50%, 0) scale(1.08);
             opacity: 0.95; /* Zmniejszone z 1 */
             filter: blur(20px); /* Zmniejszone z 24px */
         }
@@ -4238,6 +4240,8 @@
         @media (min-width: 769px) {
             .logo-container.hovering::before {
                 filter: blur(20px);
+                transform: translate3d(-50%, -50%, 0) scale(1.08);
+                -webkit-transform: translate3d(-50%, -50%, 0) scale(1.08);
             }
         }
         
@@ -4247,6 +4251,7 @@
             height: auto;
             max-height: 290px; /* Zwiększone z 260px */
             display: block;
+            margin: 0 auto;
             /* Beautiful glow on transparent SVG - no black box since SVG has no background */
             filter: drop-shadow(0 0 25px rgba(0, 204, 255, 0.8)) 
                    drop-shadow(0 0 40px rgba(0, 153, 255, 0.6))
@@ -4255,10 +4260,10 @@
             pointer-events: auto; /* Logo can be clicked */
             cursor: none;
             object-fit: contain; /* Zachowaj proporcje */
-            transform: scale(1.0) translateZ(0); /* Domyślny rozmiar + GPU acceleration */
+            transform: translate3d(0, 0, 0) scale(1.0); /* Domyślny rozmiar + GPU acceleration */
             backface-visibility: hidden; /* Safari optimization */
             -webkit-backface-visibility: hidden; /* Safari specific */
-            -webkit-transform: translateZ(0); /* Safari GPU acceleration */
+            -webkit-transform: translate3d(0, 0, 0) scale(1.0); /* Safari GPU acceleration */
             will-change: transform, filter; /* Inform browser about changes */
             position: relative;
             z-index: 2; /* Keep above the glow */
@@ -4272,8 +4277,8 @@
             filter: drop-shadow(0 0 30px rgba(0, 230, 255, 1)) 
                    drop-shadow(0 0 50px rgba(0, 153, 255, 0.8))
                    drop-shadow(0 0 80px rgba(0, 178, 255, 0.6));
-            transform: scale(1.08) translateZ(0); /* Subtelne powiększenie przy hover + GPU */
-            -webkit-transform: scale(1.08) translateZ(0); /* Safari specific */
+            transform: translate3d(0, 0, 0) scale(1.08); /* Subtelne powiększenie przy hover + GPU */
+            -webkit-transform: translate3d(0, 0, 0) scale(1.08); /* Safari specific */
         }
 
         /* Actions below the logo */
