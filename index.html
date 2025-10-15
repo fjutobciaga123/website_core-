@@ -2806,11 +2806,12 @@
             filter: drop-shadow(0 0 8px var(--core-glow-blue));
             transition: all 0.3s ease;
             flex-shrink: 0;
+            transform: translateY(2px);
         }
         
         .core-type-item:hover .core-type-logo {
             filter: drop-shadow(0 0 15px var(--core-cyan));
-            transform: scale(1.1);
+            transform: translateY(2px) scale(1.1);
         }
         
         @media (max-width: 768px) {
@@ -4705,7 +4706,7 @@
             }
             
             .header-actions {
-                bottom: 22vh; /* Wyżej - dla małych telefonów */
+                bottom: clamp(80px, 10vh, 120px); /* WYŻEJ dla małych telefonów */
             }
             
             .header-buy-now {
@@ -4733,7 +4734,7 @@
             }
             
             .header-actions {
-                bottom: 24vh; /* Wyżej - dla większych telefonów */
+                bottom: clamp(95px, 12vh, 130px); /* WYŻEJ dla średnich i dużych telefonów */
             }
             
             .header-buy-now {
