@@ -794,6 +794,68 @@
             }
         }
 
+        /* Small laptops optimization (13" screens - 1366x768, 1280x800) */
+        @media (max-width: 1366px) {
+            .dashboard-container {
+                grid-template-columns: 30% 70%;
+                gap: 0.6rem;
+                height: calc(100vh - 65px);
+                padding: 0.4rem;
+            }
+            
+            .dashboard-header {
+                padding: 0.5rem 0.8rem;
+                height: 50px;
+            }
+            
+            .logo-text {
+                font-size: 1rem;
+            }
+            
+            .back-button {
+                font-size: 0.7rem;
+                padding: 6px 12px;
+            }
+            
+            .editor-canvas-area {
+                max-height: clamp(350px, 55vh, 450px);
+                min-height: 350px;
+            }
+            
+            .pfp-title, .editor-title {
+                font-size: 0.8rem;
+                padding: 0.4rem;
+            }
+            
+            .control-button {
+                font-size: 0.65rem;
+                padding: 7px 10px;
+            }
+            
+            .editor-controls {
+                height: clamp(150px, 25vh, 200px);
+                padding: 0.3rem;
+            }
+            
+            .control-group {
+                padding: 0.4rem;
+            }
+            
+            .control-group h3 {
+                font-size: 0.65rem;
+                margin-bottom: 0.3rem;
+            }
+            
+            .color-options {
+                gap: 0.3rem;
+            }
+            
+            .color-option {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
         @media (max-width: 1200px) {
             .dashboard-container {
                 grid-template-columns: 35% 65%;
