@@ -1753,6 +1753,14 @@
                 });
                 
                 // Close dropdown when clicking outside
+                // Close dropdown on scroll
+                window.addEventListener('scroll', () => {
+                    if (dropdown.style.display === 'block') {
+                        dropdown.style.display = 'none';
+                        toggleBtn.classList.remove('open');
+                    }
+                }, true);
+                
                 document.addEventListener('click', (e) => {
                     if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
                         dropdown.style.display = 'none';
