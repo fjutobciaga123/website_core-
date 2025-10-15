@@ -910,22 +910,33 @@
                 overflow-y: auto;
             }
 
+            /* Ukryj scrollbar w mobile */
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+            
+            html, body {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
             .dashboard-header {
                 padding: 0.5rem 0.8rem;
             }
 
             .dashboard-logo h1 {
-                font-size: 0.7rem;
+                font-size: 1rem;
             }
             
             .dashboard-logo img {
-                width: 30px;
-                height: 30px;
+                width: 45px;
+                height: 45px;
             }
             
             .back-btn {
-                font-size: 0.55rem;
-                padding: 0.35rem 0.7rem;
+                font-size: 0.75rem;
+                padding: 0.6rem 1.2rem;
             }
 
             .dashboard-container {
@@ -940,7 +951,7 @@
             .pfp-panel {
                 padding: 0.8rem;
                 height: auto;
-                min-height: 350px;
+                min-height: 420px;
             }
 
             .editor-panel {
@@ -950,8 +961,8 @@
             }
 
             .editor-canvas-area {
-                min-height: 300px;
-                max-height: 400px;
+                min-height: 250px;
+                max-height: 330px;
             }
             
             .editor-controls {
@@ -973,11 +984,37 @@
                 flex: none;
             }
 
+            #logoControls {
+                min-height: auto;
+                padding: 0.4rem;
+                transition: min-height 0.3s ease;
+            }
+
+            #logoControls.expanded {
+                min-height: 240px;
+            }
+
+            #logoControls .control-button {
+                padding: 3px 6px;
+                min-height: 22px;
+                font-size: 0.6rem;
+                margin-bottom: 0.25rem;
+            }
+
+            #logoControls .control-slider {
+                margin: 0.3rem 0;
+            }
+
+            #logoControls .slider-label {
+                font-size: 0.6rem;
+                margin-bottom: 0.2rem;
+            }
+
             .control-button {
                 font-size: 0.7rem;
-                padding: 12px 10px;
+                padding: 6px 10px;
                 margin-bottom: 0.4rem;
-                min-height: 45px;
+                min-height: 32px;
             }
             
             .control-group h3 {
@@ -1004,6 +1041,31 @@
                 overflow-y: auto;
             }
 
+            /* Ukryj scrollbar w mobile */
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none;
+            }
+            
+            html, body {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .dashboard-logo h1 {
+                font-size: 1.1rem;
+            }
+            
+            .dashboard-logo img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .back-btn {
+                font-size: 0.8rem;
+                padding: 0.7rem 1.4rem;
+            }
+
             .dashboard-container {
                 padding: 0.5rem;
                 min-height: calc(100vh - 50px);
@@ -1015,7 +1077,7 @@
             .pfp-panel {
                 padding: 0.6rem;
                 height: auto;
-                min-height: 300px;
+                min-height: 370px;
             }
             
             .editor-panel {
@@ -1042,12 +1104,38 @@
                 margin: 0 0 1rem 0;
                 overflow-y: visible;
             }
+
+            #logoControls {
+                min-height: auto;
+                padding: 0.4rem;
+                transition: min-height 0.3s ease;
+            }
+
+            #logoControls.expanded {
+                min-height: 280px;
+            }
+
+            #logoControls .control-button {
+                padding: 3px 8px;
+                min-height: 24px;
+                font-size: 0.65rem;
+                margin-bottom: 0.3rem;
+            }
+
+            #logoControls .control-slider {
+                margin: 0.3rem 0;
+            }
+
+            #logoControls .slider-label {
+                font-size: 0.65rem;
+                margin-bottom: 0.2rem;
+            }
             
             .control-button {
-                padding: 14px 12px;
+                padding: 7px 12px;
                 font-size: 0.75rem;
                 margin-bottom: 0.5rem;
-                min-height: 50px;
+                min-height: 34px;
             }
             
             .control-group h3 {
@@ -1056,8 +1144,8 @@
             }
             
             .editor-canvas-area {
-                min-height: 250px;
-                max-height: 350px;
+                min-height: 220px;
+                max-height: 300px;
             }
             
             .pfp-upload-area {
@@ -2091,6 +2179,12 @@
                     this.logoSizeControl.style.display = 'block';
                     this.logoOpacityControl.style.display = 'block';
                     
+                    // Add expanded class for mobile
+                    const logoControls = document.getElementById('logoControls');
+                    if (logoControls) {
+                        logoControls.classList.add('expanded');
+                    }
+                    
                     console.log('Logo object created at position:', this.logo);
                     
                     // If image is already loaded (cached), render immediately
@@ -2106,6 +2200,13 @@
                 this.centerLogoBtn.style.display = 'none';
                 this.logoSizeControl.style.display = 'none';
                 this.logoOpacityControl.style.display = 'none';
+                
+                // Remove expanded class for mobile
+                const logoControls = document.getElementById('logoControls');
+                if (logoControls) {
+                    logoControls.classList.remove('expanded');
+                }
+                
                 this.render();
             }
             
