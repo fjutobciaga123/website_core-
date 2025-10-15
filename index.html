@@ -7185,18 +7185,13 @@
             }
             
             scrollToCenter() {
-                // Scroll to show first card (Slingor) centered on load
+                // Scroll to show first card (Slingor) from left side on load
                 setTimeout(() => {
-                    const containerWidth = this.scrollContainer.offsetWidth;
-                    const cardWidth = 14 * 16; // 14rem in pixels
-                    const gap = 1.5 * 16; // 1.5rem gap in pixels
-                    
-                    // Calculate position to center first card of middle set
+                    // Position at start of middle set - shows Slingor on left
                     const middleSetStart = this.scrollContainer.scrollWidth / 3;
-                    const centerOffset = (containerWidth - cardWidth) / 2;
                     
-                    // Scroll to position that centers the first card (Slingor)
-                    this.scrollContainer.scrollLeft = middleSetStart - centerOffset;
+                    // Scroll to beginning of middle set (no centering offset)
+                    this.scrollContainer.scrollLeft = middleSetStart;
                     this.updateActiveCards();
                 }, 100);
             }
