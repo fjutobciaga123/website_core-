@@ -4120,44 +4120,55 @@
         
         /* iPad Optimizations (769px - 1024px) */
         @media (min-width: 769px) and (max-width: 1024px) {
-            /* Ukryj custom cursor na iPadzie */
-            body {
-                cursor: default !important;
+            /* Ukryj custom cursor na iPadzie - pokaż systemowy */
+            .custom-cursor {
+                display: none !important;
             }
             
-            * {
-                cursor: default !important;
+            body {
+                cursor: auto !important;
             }
             
             a, button, .header-buy-now, .header-icon-btn {
                 cursor: pointer !important;
             }
             
-            /* Panel 50% większy i 30% w dół */
+            /* Panel większy i niżej */
             .header-actions {
-                bottom: 14vh; /* 30% niżej niż desktop (20vh) */
-                gap: 30px; /* 50% większe - było 20px */
+                bottom: 8vh; /* Jeszcze niżej - było 12vh */
+                gap: 42px; /* Zwiększony gap między przyciskiem a ikonami */
             }
             
             .header-buy-now {
-                font-size: 1.125rem; /* 50% większe - było 0.75rem */
-                padding: 12px 30px; /* 50% większe - było 8px 20px */
-                letter-spacing: 0.225em; /* 50% większe */
-                min-width: 165px; /* 50% większe - było ~110px */
+                font-size: 1.65rem; /* Większe - było 1.5rem */
+                padding: 18px 36px; /* Większy padding */
+                letter-spacing: 0.25em; /* Większe letter-spacing */
+                min-width: auto; /* Usuń min-width żeby był węższy */
+                width: auto; /* Auto szerokość dopasowana do contentu */
+                font-weight: 300; /* Lekko grubszy font */
+                display: flex; /* Flex dla lepszego wyrównania */
+                align-items: center; /* Wyśrodkowanie w pionie */
+                justify-content: center; /* Wyśrodkowanie w poziomie */
             }
             
             .header-icon-btn {
-                width: 54px; /* 50% większe - było 36px */
-                height: 54px; /* 50% większe - było 36px */
+                width: 80px; /* Większe - było 72px */
+                height: 80px; /* Większe - było 72px */
+                display: inline-flex; /* Zachowaj inline-flex */
+                align-items: center; /* Wyśrodkowanie ikony w pionie */
+                justify-content: center; /* Wyśrodkowanie ikony w poziomie */
             }
             
             .header-icon-btn svg {
-                width: 24px; /* 50% większe - było 16px */
-                height: 24px; /* 50% większe - było 16px */
+                width: 36px; /* Większe ikony - było 32px */
+                height: 36px; /* Większe ikony - było 32px */
             }
             
             .header-social-icons {
-                gap: 24px; /* 50% większe - było 16px */
+                gap: 36px; /* Większy gap między ikonami */
+                display: flex;
+                align-items: center; /* Wyrównanie w pionie */
+                justify-content: center; /* Wyrównanie w poziomie */
             }
             
             /* Footer 30% większy */
@@ -4613,7 +4624,7 @@
                 max-width: 450px; /* WIĘKSZE - było 380px */
                 width: 85vw; /* WIĘKSZE - było 75vw */
                 max-height: 220px; /* WIĘKSZE - było 190px */
-                margin-top: -80px; /* Jeszcze wyżej - było -60px */
+                margin-top: -120px; /* Znacznie wyżej - było -80px */
                 transform: translateZ(0) !important; /* Standard property - no scale on mobile */
                 -webkit-transform: translateZ(0) !important; /* Safari optimization */
                 backface-visibility: hidden;
@@ -4631,7 +4642,7 @@
             }
             
             .header-actions { 
-                bottom: 18vh; /* 18% viewport height wyżej dla tablet */
+                bottom: 25vh; /* Wyżej - bardziej wyśrodkowane nad logo */
                 gap: clamp(16px, 2.5vh, 20px); /* Responsywny gap */
                 margin-top: 0; /* Reset - używamy bottom */
             }
@@ -4658,17 +4669,30 @@
                 gap: clamp(14px, 3vw, 18px); /* Responsywny gap między ikonami */
             }
             
-            /* Wyłącz hover effects na mobile - tylko tap */
+            /* Mobile hover effects - subtelne świecenie bez scale */
             .header-buy-now:hover,
-            .header-icon-btn:hover {
-                transform: none !important;
+            .header-buy-now:active {
+                transform: none !important; /* Bez scale ani translateY */
+                background: rgba(0, 25, 40, 0.3) !important; /* Ten sam background */
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
                            0 2px 6px rgba(0, 0, 0, 0.05) !important;
+                text-shadow: 0 0 10px var(--core-glow-blue) !important; /* Zachowaj subtelne świecenie */
+                color: var(--core-text-blue) !important; /* Zachowaj kolor */
             }
             
-            .header-buy-now:active,
+            .header-icon-btn:hover,
             .header-icon-btn:active {
-                transform: scale(0.95); /* Tylko lekkie wciśnięcie przy kliknięciu */
+                transform: none !important; /* Bez translateY */
+                background: rgba(0, 25, 40, 0.3) !important; /* Ten sam background */
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
+                           0 2px 6px rgba(0, 0, 0, 0.05) !important;
+                color: var(--core-text-blue) !important; /* Zachowaj kolor */
+                text-shadow: none !important; /* Bez dodatkowego text-shadow */
+            }
+            
+            .header-icon-btn:hover svg,
+            .header-icon-btn:active svg {
+                filter: none !important; /* Bez dodatkowego filtru na ikonie */
             }
         }
         
@@ -4677,10 +4701,11 @@
                 max-width: 420px; /* Dostosowane dla małych telefonów */
                 width: 80vw;
                 max-height: 200px;
+                margin-top: -110px; /* Wyżej dla małych telefonów */
             }
             
             .header-actions {
-                bottom: 15vh; /* 15% viewport height wyżej dla mobile */
+                bottom: 22vh; /* Wyżej - dla małych telefonów */
             }
             
             .header-buy-now {
@@ -4704,10 +4729,11 @@
             .core-logo {
                 max-width: 480px;
                 width: 88vw;
+                margin-top: -120px; /* Wyżej dla większych telefonów */
             }
             
             .header-actions {
-                bottom: 16vh; /* 16% viewport height wyżej dla większych mobile */
+                bottom: 24vh; /* Wyżej - dla większych telefonów */
             }
             
             .header-buy-now {
@@ -7159,10 +7185,18 @@
             }
             
             scrollToCenter() {
-                // Scroll to middle set and update active cards
+                // Scroll to show first card (Slingor) centered on load
                 setTimeout(() => {
-                    const middlePosition = this.scrollContainer.scrollWidth / 3;
-                    this.scrollContainer.scrollLeft = middlePosition;
+                    const containerWidth = this.scrollContainer.offsetWidth;
+                    const cardWidth = 14 * 16; // 14rem in pixels
+                    const gap = 1.5 * 16; // 1.5rem gap in pixels
+                    
+                    // Calculate position to center first card of middle set
+                    const middleSetStart = this.scrollContainer.scrollWidth / 3;
+                    const centerOffset = (containerWidth - cardWidth) / 2;
+                    
+                    // Scroll to position that centers the first card (Slingor)
+                    this.scrollContainer.scrollLeft = middleSetStart - centerOffset;
                     this.updateActiveCards();
                 }, 100);
             }
